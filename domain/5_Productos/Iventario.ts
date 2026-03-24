@@ -18,14 +18,15 @@ export class Inventario{
 
     //métodos
     verificarStock(): number{
+        //aún por completar
         return this.stockActual;
     }
 
     alertarStockBajo(): void{
-
+        //aún por completar
     }
 
     registrarEntrada(cantidad: number): void{
-
+        //aún por completar
     }
 }

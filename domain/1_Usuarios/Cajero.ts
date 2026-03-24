@@ -31,14 +31,14 @@ export class Cajero extends PersonalOperativo {
     //métodos
 
     procesarPago(idPedido: number, metodo: string): void{
-
+        //aún por completar
     }
 
     generarFactura(): void{
-
+        //aún por completar
     }
 
     realizarCorteCaja(): void{
-
+        //aún por completar
     }
 }

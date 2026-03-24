@@ -23,11 +23,11 @@ export class AdminGeneral extends Empleado {
 
     //métodfos
     crearSucursal(): void{
-
+        //aún por completar
     }
 
     asignarRoles(): void{
-
+        //aún por completar
     }
 
 }

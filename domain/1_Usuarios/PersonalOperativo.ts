@@ -27,7 +27,7 @@ export class PersonalOperativo extends Empleado{
     }
 
     actualizarEstadoTarea(): void{
-    console.log(`🔄 ${this.getNombre()} actualizó una tarea`);        
+    console.log(`${this.getNombre()} actualizó una tarea`);        
     }
 
 }

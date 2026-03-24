@@ -27,14 +27,17 @@ export class Bartender extends PersonalOperativo {
     //métodos
 
     prepararBebida(idPedido: number): void{
+        //aún por completar
         console.log()
     }
 
     notificarPedidoListo(): void{
+        //aún por completar
         console.log()
     }
 
     registrarMermaEnBarra(): void{
+        //aún por completar
         console.log()
     }
 }

@@ -26,14 +26,14 @@ export class Contador extends PersonalOperativo {
 
     //métodos
     registrarGastos(monto: GLfloat): void{
-
+        //aún por completar
     }
 
     conciliarFacturas(): void{
-
+        //aún por completar
     }
 
     generarBalanceMensual(): void{
-
+        //aún por completar
     }
 }

@@ -18,18 +18,19 @@ export class Pedido{
 
     //métodos
     calcularTotal(): number{
+        //aún por completar
         return this.total;
     }
 
     aplicarDescuento(): void{
-
+        //aún por completar
     }
 
     cerrarCuenta(): void{
-
+        //aún por completar
     }
 
     agregarPropina(cantidad: number): void{
-
+        //aún por completar
     }
 }

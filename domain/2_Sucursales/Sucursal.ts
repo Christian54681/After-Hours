@@ -19,10 +19,10 @@ export class Sucursal{
 
     //métodos
     abrirEstablecimiento(): void{
-
+        //aún por completar
     }
 
     cerrarEstablecimiento(): void{
-
+        //aún por completar
     }
 }

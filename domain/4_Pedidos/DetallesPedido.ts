@@ -21,10 +21,11 @@ export class DetallesPedido{
 
     //métodos
     calcularSubtotal(): number{
+        //aún por completar
         return this.subTotal;
     }
 
     modificarCantidad(n: number): void{
-        
+         //aún por completar       
     }
 }

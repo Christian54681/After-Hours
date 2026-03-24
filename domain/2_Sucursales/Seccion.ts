@@ -16,10 +16,10 @@ export class Seccion{
 
     //métodos
     obtenerMesasDisponibles(): any{
-
+        //aún por completar
     }
 
     asignarMesero(idEmpleado: number): void{
-
+        //aún por completar
     }
 }

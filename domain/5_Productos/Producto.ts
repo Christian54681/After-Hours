@@ -21,10 +21,11 @@ export class Producto{
 
     //métodos
     actualizarPrecio(nuevoPrecio: number): void{
-
+        //aún por completar
     }
 
     obtenerInformacion(): string{
+        //aún por completar
         return this.categoria;
     }
 }

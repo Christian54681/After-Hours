@@ -38,10 +38,11 @@ export class AdminSucursal extends Empleado {
     }
 
     gestionarHorarios(): void {
+        //aún por completar
     }
 
     asignarRoles(idEmpleado: string, nuevoRol: string): void {
-
+        //aún por completar
     }
 
 }
