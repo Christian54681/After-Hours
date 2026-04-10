@@ -24,16 +24,15 @@ export class Contador extends PersonalOperativo {
         this.nivelAcceso = nivelAcceso;
     }
 
-    //métodos
-    registrarGastos(monto: GLfloat): void{
-        //aún por completar
+    registrarGastos(monto: number): void {
+        console.log(`Contador ${this.getNombre()} registró gastos por monto: $${monto}`);
     }
 
-    conciliarFacturas(): void{
-        //aún por completar
+    conciliarFacturas(): void {
+        console.log(`Contador ${this.getNombre()} está conciliando facturas`);
     }
 
-    generarBalanceMensual(): void{
-        //aún por completar
+    generarBalanceMensual(): void {
+        console.log(`Contador ${this.getNombre()} generó balance mensual`);
     }
 }

@@ -25,19 +25,15 @@ export class Bartender extends PersonalOperativo {
     }
 
     //métodos
-
-    prepararBebida(idPedido: number): void{
-        //aún por completar
-        console.log()
+    prepararBebida(idPedido: number): void {
+        console.log(`Bartender ${this.getNombre()} está preparando bebida para pedido ${idPedido} en barra ${this.barraAsignada}`);
     }
 
-    notificarPedidoListo(): void{
-        //aún por completar
-        console.log()
+    notificarBebidaLista(): void {
+        console.log(`Bartender ${this.getNombre()} notificó que la bebida está lista`);
     }
 
-    registrarMermaEnBarra(): void{
-        //aún por completar
-        console.log()
+    registrarMermaEnBarra(cantidad: number, motivo: string): void {
+        console.log(`Bartender ${this.getNombre()} registró merma de ${cantidad} unidades por: ${motivo}`);
     }
 }

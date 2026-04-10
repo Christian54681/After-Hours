@@ -22,27 +22,27 @@ export class AdminSucursal extends Empleado {
     }
 
     //métodfos
-    supervisarInventario(): void {
-
+   supervisarInventario(): void {
+        console.log(`AdminSucursal ${this.getNombre()} está supervisando inventario de la sucursal ${this.idSucursalACargo}`);
     }
 
     autorizarOrdenCompra(idOrden: number, monto: number): boolean {
         if (monto <= this.presupuestoSucursal) {
-            console.log(`El administrador de sucursal: ${this.getNombre()} autorizó orden de compra #${idOrden} por $${monto}`);
+            console.log(`AdminSucursal ${this.getNombre()} autorizó orden de compra #${idOrden} por $${monto}`);
             this.presupuestoSucursal -= monto;
             return true;
         } else {
-            console.log(`El administrador de sucursal: ${this.getNombre()} rechazó orden de compra #${idOrden} (no alcanzó)`);
+            console.log(`AdminSucursal ${this.getNombre()} rechazó orden de compra #${idOrden} (presupuesto insuficiente)`);
             return false;
         }
     }
 
     gestionarHorarios(): void {
-        //aún por completar
+        console.log(`AdminSucursal ${this.getNombre()} está gestionando horarios del personal`);
     }
 
     asignarRoles(idEmpleado: string, nuevoRol: string): void {
-        //aún por completar
+        console.log(`AdminSucursal ${this.getNombre()} asignó rol "${nuevoRol}" al empleado ${idEmpleado}`);
     }
 
 }

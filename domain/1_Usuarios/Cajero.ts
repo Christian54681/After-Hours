@@ -30,15 +30,21 @@ export class Cajero extends PersonalOperativo {
 
     //métodos
 
-    procesarPago(idPedido: number, metodo: string): void{
-        //aún por completar
+    procesarPago(idPedido: number, monto: number, metodo: string): void {
+        console.log(`Cajero ${this.getNombre()} procesó pago de $${monto} (Pedido #${idPedido}) con ${metodo}`);
+        this.montoActual += monto;
     }
 
-    generarFactura(): void{
-        //aún por completar
+    generarFactura(): void {
+        console.log(`Cajero ${this.getNombre()} generó factura`);
     }
 
-    realizarCorteCaja(): void{
-        //aún por completar
+    realizarCorteCaja(): number {
+        const totalEnCaja = this.montoActual;
+        console.log(`Cajero ${this.getNombre()} realizó corte de caja. Total en caja: $${totalEnCaja}`);
+        
+        this.montoActual = this.fondoInicial;
+        
+        return totalEnCaja;
     }
 }

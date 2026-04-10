@@ -20,12 +20,15 @@ export class DetallesPedido{
     }
 
     //métodos
-    calcularSubtotal(): number{
-        //aún por completar
+    calcularSubtotal(): number {
         return this.subTotal;
     }
 
-    modificarCantidad(n: number): void{
-         //aún por completar       
+    modificarCantidad(nuevaCantidad: number): void {
+        if (nuevaCantidad <= 0) {
+            throw new Error("La cantidad debe ser mayor a 0");
+        }
+        this.cantidad = nuevaCantidad;
+        console.log(`Cantidad modificada en detalle ${this.idDetalle}: ${nuevaCantidad} unidades`);
     }
 }
