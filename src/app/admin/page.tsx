@@ -22,6 +22,15 @@ interface Employee {
     createdAt: string;
 }
 
+interface Supplier {
+    id: number;
+    name: string;
+    company: string;
+    phone: string;
+    email: string;
+    createdAt: string;
+}
+
 const initialBranches: Branch[] = [
     {
         id: 1,
@@ -164,12 +173,32 @@ const initialEmployees: Employee[] = [
     }
 ];
 
+const initialSuppliers: Supplier[] = [
+    {
+        id: 1,
+        name: "Ricardo Pérez",
+        company: "Bebidas Premium SA",
+        phone: "5512345678",
+        email: "ricardo@bebidas.com",
+        createdAt: "01/03/2024",
+    },
+    {
+        id: 2,
+        name: "Laura Gómez",
+        company: "Distribuidora del Sur",
+        phone: "9512345678",
+        email: "laura@distribuidora.com",
+        createdAt: "05/03/2024",
+    }
+];
+
 export default function AdminPage() {
-    const [activeTab, setActiveTab] = useState<"branches" | "employees">("branches");
+    const [activeTab, setActiveTab] = useState<"branches" | "employees" | "suppliers">("branches");
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
     const [branches, setBranches] = useState(initialBranches);
     const [employees, setEmployees] = useState(initialEmployees);
+    const [suppliers, setSuppliers] = useState(initialSuppliers);
 
     // FORM
     const [showForm, setShowForm] = useState(false);
@@ -198,8 +227,10 @@ export default function AdminPage() {
     const handleDelete = (id: number) => {
         if (activeTab === "branches") {
             setBranches(branches.filter(b => b.id !== id));
-        } else {
+        } else if (activeTab === "employees") {
             setEmployees(employees.filter(e => e.id !== id));
+        } else {
+            setSuppliers(suppliers.filter(s => s.id !== id));
         }
     };
 
@@ -215,11 +246,21 @@ export default function AdminPage() {
                     ...formData
                 }]);
             }
-        } else {
+        } else if (activeTab === "employees") {
             if (editId) {
                 setEmployees(employees.map(e => e.id === editId ? { ...e, ...formData } : e));
             } else {
                 setEmployees([...employees, {
+                    id: Date.now(),
+                    createdAt: new Date().toLocaleDateString(),
+                    ...formData
+                }]);
+            }
+        } else {
+            if (editId) {
+                setSuppliers(suppliers.map(s => s.id === editId ? { ...s, ...formData } : s));
+            } else {
+                setSuppliers([...suppliers, {
                     id: Date.now(),
                     createdAt: new Date().toLocaleDateString(),
                     ...formData
@@ -269,6 +310,16 @@ export default function AdminPage() {
                     >
                         <span>Empleados</span>
                     </button>
+
+                    <button
+                        onClick={() => setActiveTab("suppliers")}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition ${activeTab === "suppliers"
+                            ? "bg-[#2a2523] text-[#e8a530]"
+                            : "text-[#858587] hover:bg-[#2a2523]"
+                            }`}
+                    >
+                        <span>Proveedores</span>
+                    </button>
                 </nav>
 
                 <div className="p-4 border-t border-[#2a2523]">
@@ -287,14 +338,22 @@ export default function AdminPage() {
                 {/* HEADER */}
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-3xl font-bold text-[#e8a530]">
-                        {activeTab === "branches" ? "Sucursales" : "Empleados"}
+                        {activeTab === "branches"
+                            ? "Sucursales"
+                            : activeTab === "employees"
+                                ? "Empleados"
+                                : "Proveedores"}
                     </h1>
 
                     <button
                         onClick={handleAdd}
                         className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#e8a530] text-black font-medium hover:opacity-90 transition"
                     >
-                        {activeTab === "branches" ? "+ Agregar Sucursal" : "+ Agregar Empleado"}
+                        {activeTab === "branches"
+                            ? "+ Agregar Sucursal"
+                            : activeTab === "employees"
+                                ? "+ Agregar Empleado"
+                                : "+ Agregar Proveedor"}
                     </button>
                 </div>
 
@@ -350,7 +409,7 @@ export default function AdminPage() {
                                         />
                                     </div>
                                 </>
-                            ) : (
+                            ) : activeTab === "employees" ? (
                                 <>
                                     <div>
                                         <p className="text-sm text-[#bcb8b7] mb-1">Nombre:</p>
@@ -402,6 +461,48 @@ export default function AdminPage() {
                                         />
                                     </div>
                                 </>
+                            ) : (
+                                <>
+                                    <div>
+                                        <p className="text-sm text-[#bcb8b7] mb-1">Nombre:</p>
+                                        <input
+                                            className="w-full p-2 bg-[#131316] rounded"
+                                            placeholder="Juan Pérez"
+                                            value={formData.name || ""}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm text-[#bcb8b7] mb-1">Empresa:</p>
+                                        <input
+                                            className="w-full p-2 bg-[#131316] rounded"
+                                            placeholder="Proveedor SA"
+                                            value={formData.company || ""}
+                                            onChange={e => setFormData({ ...formData, company: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm text-[#bcb8b7] mb-1">Teléfono:</p>
+                                        <input
+                                            className="w-full p-2 bg-[#131316] rounded"
+                                            placeholder="9511234567"
+                                            value={formData.phone || ""}
+                                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm text-[#bcb8b7] mb-1">Correo:</p>
+                                        <input
+                                            className="w-full p-2 bg-[#131316] rounded"
+                                            placeholder="correo@email.com"
+                                            value={formData.email || ""}
+                                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                        />
+                                    </div>
+                                </>
                             )}
 
                             <div className="flex gap-3 pt-3">
@@ -426,7 +527,12 @@ export default function AdminPage() {
 
                 {/* LISTAS */}
                 <div className="space-y-4">
-                    {(activeTab === "branches" ? branches : employees).map((item: any) => {
+                    {(activeTab === "branches"
+                        ? branches
+                        : activeTab === "employees"
+                            ? employees
+                            : suppliers
+                    ).map((item: any) => {
                         const isOpen = expandedId === item.id;
 
                         return (
@@ -441,7 +547,9 @@ export default function AdminPage() {
                                         <span className="inline-block mt-1 text-xs px-2 py-1 rounded-full bg-[#2a2523] text-[#e8a530]">
                                             {activeTab === "branches"
                                                 ? item.category
-                                                : `${item.branch} • ${item.position}`}
+                                                : activeTab === "employees"
+                                                    ? `${item.branch} • ${item.position}`
+                                                    : item.company}
                                         </span>
                                     </div>
 
@@ -464,12 +572,19 @@ export default function AdminPage() {
                                                 <p><span className="text-[#bcb8b7]">Ubicación:</span> {item.location}</p>
                                                 <p><span className="text-[#bcb8b7]">Gerente:</span> {item.manager}</p>
                                             </>
-                                        ) : (
+                                        ) : activeTab === "employees" ? (
                                             <>
                                                 <p><span className="text-[#bcb8b7]">Sucursal:</span> {item.branch}</p>
                                                 <p><span className="text-[#bcb8b7]">Puesto:</span> {item.position}</p>
                                                 <p><span className="text-[#bcb8b7]">Teléfono:</span> {item.phone}</p>
-                                                <p><span className="text-[#bcb8b7]">Correo:</span> {item.email}</p>                                            </>
+                                                <p><span className="text-[#bcb8b7]">Correo:</span> {item.email}</p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p><span className="text-[#bcb8b7]">Empresa:</span> {item.company}</p>
+                                                <p><span className="text-[#bcb8b7]">Teléfono:</span> {item.phone}</p>
+                                                <p><span className="text-[#bcb8b7]">Correo:</span> {item.email}</p>
+                                            </>
                                         )}
 
                                         <div className="flex gap-3 pt-3">
