@@ -44,6 +44,7 @@ export async function POST(req: Request) {
             token,
             user: {
                 username: usuario.username,
+                nombre: usuario.empleadoInfo?.nombreCompleto || usuario.username,
                 tipo: usuario.tipo,
                 rol: rol
             }

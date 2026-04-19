@@ -22,11 +22,11 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { idSucursal, nombre, direccion, tipoBar, secciones } = body;
+        const { idSucursal, username, direccion, tipoBar, secciones } = body;
 
         // Validar campos obligatorios
-        if (!idSucursal || !nombre || !tipoBar) {
-            return NextResponse.json({ error: "Faltan campos obligatorios (id, nombre o tipo)" }, { status: 400 });
+        if (!idSucursal || !username || !tipoBar) {
+            return NextResponse.json({ error: "Faltan campos obligatorios (id, username o tipo)" }, { status: 400 });
         }
 
         const client = await clientPromise;
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         // Insertar con la estructura anidada para facilitar la POO
         const nuevaSucursal = {
             idSucursal,
-            nombre,
+            username,
             direccion,
             tipoBar,
             secciones: secciones || [],
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
-            message: `Sucursal '${nombre}' creada con éxito`
+            message: `Sucursal '${username}' creada con éxito`
         });
 
     } catch (error) {
