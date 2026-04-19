@@ -3,32 +3,36 @@ import bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
 import clientPromise from '../../../../../lib/mongodb';
 
+
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'nosecreto');
 
 export async function POST(req: Request) {
     try {
-        const { username, password } = await req.json();
+        const { email, password } = await req.json();
 
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // Buscar usuario por username
-        const usuario = await db.collection("users").findOne({ username });
+        // Buscar usuario por EMAIL
+        const usuario = await db.collection("users").findOne({ email });
 
         if (!usuario) {
             return NextResponse.json({ error: "Credenciales incorrectas" }, { status: 401 });
         }
 
-        // verificar la contraseña
+        // Verificar la contraseña
         const passwordValido = await bcrypt.compare(password, usuario.password);
         if (!passwordValido) {
             return NextResponse.json({ error: "Credenciales incorrectas" }, { status: 401 });
         }
 
-        const rol = usuario.tipo === 'empleado' ? usuario.empleadoInfo.tipoRol : 'Cliente';
+        // Determinar el rol
+        const rol = usuario.tipo === 'empleado' ? usuario.empleadoInfo?.tipoRol : 'Cliente';
 
+        // Generar el Token
         const token = await new SignJWT({
             id: usuario._id,
+            email: usuario.email, // Agregamos email al payload
             username: usuario.username,
             tipo: usuario.tipo,
             tipoRol: rol,
@@ -43,6 +47,7 @@ export async function POST(req: Request) {
             success: true,
             token,
             user: {
+                email: usuario.email,
                 username: usuario.username,
                 nombre: usuario.empleadoInfo?.nombreCompleto || usuario.username,
                 tipo: usuario.tipo,
