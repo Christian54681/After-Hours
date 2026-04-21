@@ -36,14 +36,14 @@ export async function POST(req: Request) {
         }
 
         // Actualiza estado, Relaciona titular y Asigna mesero
-        // 1. Cambiamos la mesa a Ocupada (estado: 2)
+        // Cambiamos la mesa a Ocupada (estado: 2)
         await db.collection("branches").updateOne(
             { idSucursal, "secciones.idSeccion": idSeccion, "secciones.mesas.numeroMesa": numeroMesa },
             { $set: { "secciones.$[sec].mesas.$[mes].estado": 2 } },
             { arrayFilters: [{ "sec.idSeccion": idSeccion }, { "mes.numeroMesa": numeroMesa }] }
         );
 
-        // 2. Creamos la "Orden/Comanda" para vincular todo
+        // Creamos la "Orden/Comanda" para vincular todo
         const nuevaOrden = {
             idSucursal,
             mesa: numeroMesa,

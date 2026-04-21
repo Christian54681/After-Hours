@@ -5,15 +5,48 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Wine, Mail, Lock } from "lucide-react";
 import barBg from "@/assets/bar-bg.jpg";
+import { useNavigate } from "react-router-dom"; // Cambia el window.location por esto
+import { toast } from "sonner"; // Para avisar si el login falló
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to admin on submit for demo
-    window.location.href = "/admin";
+
+    try {
+      // hacemos la petición al backend para validar las credenciales
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("¡Bienvenido de nuevo!");
+        // Guardamos el token en localStorage para futuras peticiones autenticadas
+        if (data.token) localStorage.setItem("token", data.token);
+
+        // AQUI FALTA AGREGAR LOGICA PARA VALIDAR SI ES ADMIN O NO
+        // Y MANDAR A LA PAGINA DE ADMIN O ALA DE USUARIO COMUN
+
+        // Ahora sí, navegamos al admin de verdad
+        navigate("/admin");
+      } else {
+        // Si el back dice que las credenciales no coinciden
+        toast.error(data.error || "Credenciales incorrectas");
+      }
+    } catch (error) {
+      console.error("Error en el login:", error);
+      toast.error("No se pudo conectar con el servidor");
+    }
   };
 
   return (

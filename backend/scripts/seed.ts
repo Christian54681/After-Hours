@@ -3,14 +3,14 @@ const { MongoClient } = require('mongodb');
 const bcrypt = require('bcryptjs');
 
 async function seed() {
-    const uri = "mongodb://localhost:27017/after_hours"; 
+    const uri = "mongodb://localhost:27017/after_hours";
     const client = new MongoClient(uri);
 
     try {
         await client.connect();
         const db = client.db("after_hours");
 
-        // 1. LIMPIEZA TOTAL (Reset)
+        // LIMPIEZA TOTAL (Reset)
         console.log("🧹 Limpiando base de datos...");
         await db.collection("users").deleteMany({});
         await db.collection("branches").deleteMany({});
@@ -19,7 +19,7 @@ async function seed() {
         const salt = await bcrypt.genSalt(10);
         const passHash = await bcrypt.hash("admin123", salt);
 
-        // 2. INSERTAR ADMIN GENERAL
+        // INSERTAR ADMIN GENERAL
         await db.collection("users").insertOne({
             username: "admin",
             email: "admin@afterhours.com",
@@ -36,7 +36,7 @@ async function seed() {
             }
         });
 
-        // 3. INSERTAR UN MESERO DE PRUEBA (Para tu diagrama)
+        // INSERTAR UN MESERO DE PRUEBA (Para tu diagrama)
         await db.collection("users").insertOne({
             username: "josue.mesero",
             email: "josue@afterhours.com",
@@ -53,7 +53,7 @@ async function seed() {
             }
         });
 
-        // 4. INSERTAR SUCURSAL CON SECCIONES Y MESAS (Infraestructura)
+        // INSERTAR SUCURSAL CON SECCIONES Y MESAS (Infraestructura)
         await db.collection("branches").insertOne({
             idSucursal: 1,
             nombre: "After Hours Centro",

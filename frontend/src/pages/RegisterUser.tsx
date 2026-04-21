@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Wine, Mail, Lock, User } from "lucide-react";
 import barBg from "@/assets/bar-bg.jpg";
+import { useToast } from "@/components/ui/use-toast";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -13,8 +14,52 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [isAdult, setIsAdult] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { toast } = useToast();
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const userData = {
+      username: name,
+      email,
+      password
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "¡Cuenta creada!",
+          description: "Tu registro en After Hours fue exitoso. Ya puedes entrar.",
+        });
+
+        navigate("/login");
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error al registrarse",
+          description: data.error || "Hubo un problema con tus datos.",
+        });
+      }
+    } catch (error) {
+      console.error("Error en registro:", error);
+      toast({
+        variant: "destructive",
+        title: "Servidor fuera de servicio",
+        description: "No pudimos conectar con el backend. Intenta más tarde.",
+      });
+    }
   };
 
   return (
@@ -34,10 +79,10 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-foreground/80">Nombre completo</Label>
+              <Label htmlFor="name" className="text-foreground/80">Nombre de usuario</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input id="name" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)}
+                <Input id="name" placeholder="Tu nombre de usuario" value={name} onChange={(e) => setName(e.target.value)}
                   className="pl-10 bg-muted/50 border-border focus:border-primary focus:ring-primary/30" />
               </div>
             </div>

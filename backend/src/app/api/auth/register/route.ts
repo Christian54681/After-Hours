@@ -31,11 +31,7 @@ export async function POST(req: Request) {
             username: username.toLowerCase().trim(),
             email: email.toLowerCase().trim(),
             password: hashedPassword,
-            tipo: "cliente", // Forzamos tipo cliente
-            createdAt: new Date(),
-            clienteInfo: {
-                puntosLealtad: 0
-            }
+            tipo: "Cliente", // Forzamos tipo cliente
         };
 
         await db.collection("users").insertOne(nuevoCliente);

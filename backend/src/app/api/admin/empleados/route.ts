@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // GENERACIÓN AUTOMÁTICA DEL USERNAME (ej: nombre.apellido)
+        // GENERACIÓN AUTOMÁTICA DEL USERNAME
         const baseUsername = datosEmpleado.nombreCompleto
             .toLowerCase()
             .trim()
