@@ -10,6 +10,7 @@
     "seed": "node scripts/seed.ts"
   },
   "dependencies": {
+    "after_hours": "file:..",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.2",
     "mongodb": "^7.1.0",
