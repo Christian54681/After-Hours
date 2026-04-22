@@ -1,4 +1,4 @@
-export class Producto{
+export class Producto {
     public idProd: number;
     public nombre: string;
     public precioUnitario: number;
@@ -11,7 +11,7 @@ export class Producto{
         precioUnitario: number,
         categoria: string,
         esAlcoholica: boolean,
-    ){
+    ) {
         this.idProd = idProd;
         this.nombre = nombre;
         this.precioUnitario = precioUnitario;
@@ -20,12 +20,25 @@ export class Producto{
     }
 
     //métodos
-    actualizarPrecio(nuevoPrecio: number): void{
-        //aún por completar
+    actualizarPrecio(nuevoPrecio: number): void {
+        if (nuevoPrecio <= 0) {
+            throw new Error("El precio unitario debe ser mayor a 0");
+        }
+
+        const precioAnterior = this.precioUnitario;
+        this.precioUnitario = nuevoPrecio;
+
+        console.log(`Precio actualizado del producto ${this.idProd} - ${this.nombre}`);
+        console.log(`Precio anterior: $${precioAnterior} → Nuevo precio: $${nuevoPrecio}`);
     }
 
-    obtenerInformacion(): string{
-        //aún por completar
-        return this.categoria;
+    obtenerInformacion(): string {
+        const tipo = this.esAlcoholica ? "Alcohólica" : "No alcohólica";
+
+        return `Producto: ${this.nombre} 
+                | ID: ${this.idProd}
+                | Categoría: ${this.categoria}
+                | Precio: $${this.precioUnitario}
+                | Tipo: ${tipo}`;
     }
 }

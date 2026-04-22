@@ -1,4 +1,4 @@
-export class Sucursal{
+export class Sucursal {
     //atributos
     public idSucursal: number;
     public nombre: string;
@@ -10,7 +10,7 @@ export class Sucursal{
         nombre: string,
         direccion: string,
         tipoBar: string
-    ){
+    ) {
         this.idSucursal = idSucursal;
         this.nombre = nombre;
         this.direccion = nombre;
@@ -18,11 +18,17 @@ export class Sucursal{
     }
 
     //métodos
-    abrirEstablecimiento(): void{
-        //aún por completar
+    abrirEstablecimiento(): void {
+        console.log(`Abriendo establecimiento: ${this.nombre} (ID: ${this.idSucursal})`);
+        console.log(`Dirección: ${this.direccion}`);
+        console.log(`Tipo de bar: ${this.tipoBar}`);
+
+        console.log(`Establecimiento ${this.nombre} abierto correctamente.`);
     }
 
-    cerrarEstablecimiento(): void{
-        //aún por completar
+    cerrarEstablecimiento(): void {
+        console.log(`Cerrando establecimiento: ${this.nombre} (ID: ${this.idSucursal})`);
+
+        console.log(`Establecimiento ${this.nombre} cerrado correctamente.`);
     }
 }

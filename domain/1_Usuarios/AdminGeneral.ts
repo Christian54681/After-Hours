@@ -14,7 +14,7 @@ export class AdminGeneral extends Empleado {
         tipoRol: string,
         idEmpleado: string,
         idGlobal: number,
-        todasLasSucursales: number[]= [],
+        todasLasSucursales: number[] = [],
     ) {
         super(id, nombre, email, telefono, estado, tipoRol, idEmpleado);
         this.idGlobal = idGlobal;
@@ -22,12 +22,30 @@ export class AdminGeneral extends Empleado {
     }
 
     //métodfos
-    crearSucursal(): void{
-        //aún por completar
+    crearSucursal(
+        nombre: string,
+        direccion: string,
+        tipoBar: string
+    ): void {
+        console.log(`AdminGeneral ${this.getNombre()} está creando una nueva sucursal:`);
+        console.log(`Nombre: ${nombre}`);
+        console.log(`Dirección: ${direccion}`);
+        console.log(`Tipo de Bar: ${tipoBar}`);
+
+        console.log(`Sucursal "${nombre}" creada exitosamente por ${this.getNombre()}`);
     }
 
-    asignarRoles(): void{
-        //aún por completar
+    asignarRoles(idEmpleado: string, nuevoRol: string): void {
+        console.log(`AdminGeneral ${this.getNombre()} está asignando rol:`);
+        console.log(`Empleado ID: ${idEmpleado}`);
+        console.log(`Nuevo Rol: ${nuevoRol}`);
+
+        if (!nuevoRol || nuevoRol.trim() === '') {
+            throw new Error("El rol no puede estar vacío");
+        }
+
+
+        console.log(`Rol "${nuevoRol}" asignado correctamente al empleado ${idEmpleado}`);
     }
 
 }

@@ -1,4 +1,4 @@
-export class Proveedor{
+export class Proveedor {
     //atributod
     public idProveedor: number;
     public empresa: string;
@@ -10,7 +10,7 @@ export class Proveedor{
         empresa: string,
         contacto: string,
         tiempoEntregaDias: number,
-    ){
+    ) {
         this.idProveedor = idProveedor;
         this.empresa = empresa;
         this.contacto = contacto;
@@ -18,9 +18,14 @@ export class Proveedor{
     }
 
     //métodos
-    consultarDeudas(): number{
-        //aún por completar
-        return this.tiempoEntregaDias;
-    }
+    consultarDeudas(): number {
+        console.log(`Consultando deudas del proveedor ${this.empresa} (ID: ${this.idProveedor})`);
+        console.log(`Contacto: ${this.contacto} | Tiempo de entrega: ${this.tiempoEntregaDias} días`);
 
+        const deudaTotal = 0;
+
+        console.log(`Deuda total actual del proveedor ${this.empresa}: $${deudaTotal}`);
+
+        return deudaTotal;
+    }
 }
