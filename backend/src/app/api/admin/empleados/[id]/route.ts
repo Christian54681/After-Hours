@@ -30,12 +30,13 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         const updateData: any = {};
         if (body.username) updateData.username = body.username;
         if (body.email) updateData.email = body.email;
-        
+
         // Campos específicos de empleadoInfo
-        if (body.tipoRol) updateData["empleadoInfo.tipoRol"] = body.tipoRol;
-        if (body.idSucursal) updateData["empleadoInfo.idSucursal"] = body.idSucursal;
-        if (body.telefono) updateData["empleadoInfo.telefono"] = body.telefono;
-        if (body.estado) updateData["empleadoInfo.estado"] = body.estado;
+        if (body.empleadoInfo) {
+            for (const key in body.empleadoInfo) {
+                updateData[`empleadoInfo.${key}`] = body.empleadoInfo[key];
+            }
+        }
 
         const result = await db.collection("users").updateOne(
             { _id: new ObjectId(params.id), tipo: "empleado" },

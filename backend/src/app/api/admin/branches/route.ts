@@ -22,11 +22,11 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { idSucursal, username, direccion, tipoBar, secciones } = body;
+        const { idSucursal, nombre, direccion, tipoBar, secciones } = body;
 
         // Validar campos obligatorios
-        if (!idSucursal || !username || !tipoBar) {
-            return NextResponse.json({ error: "Faltan campos obligatorios (id, username o tipo)" }, { status: 400 });
+        if (!idSucursal || !nombre || !tipoBar) {
+            return NextResponse.json({ error: "Faltan campos obligatorios (id, nombre o tipo)" }, { status: 400 });
         }
 
         const client = await clientPromise;
@@ -37,28 +37,41 @@ export async function POST(req: Request) {
         if (existe) {
             return NextResponse.json({ error: "El ID de sucursal ya existe" }, { status: 400 });
         }
+        // 1. Crear las Mesas y obtener sus IDs
+        const seccionesConIds = await Promise.all(secciones.map(async (sec: any) => {
+            // Insertar todas las mesas de esta sección
+            const mesasResult = await db.collection("tables").insertMany(
+                sec.mesas.map((m: any) => ({ ...m, estado: 1 })) // 1 = Libre
+            );
 
-        // Insertar con la estructura anidada para facilitar la POO
+            // 2. Crear la Sección vinculada a esas mesas
+            const seccionResult = await db.collection("sections").insertOne({
+                idSeccion: sec.idSeccion,
+                nombre: sec.nombreSeccion,
+                idMesas: Object.values(mesasResult.insertedIds)
+            });
+
+            return seccionResult.insertedId;
+        }));
+
+        // 3. Crear la Sucursal vinculada a las secciones
         const nuevaSucursal = {
             idSucursal,
-            username,
+            nombre,
             direccion,
             tipoBar,
-            secciones: secciones || [],
+            idSecciones: seccionesConIds,
             createdAt: new Date(),
             creadoPor: payload.username
         };
 
         await db.collection("branches").insertOne(nuevaSucursal);
 
-        return NextResponse.json({
-            success: true,
-            message: `Sucursal '${username}' creada con éxito`
-        });
+        return NextResponse.json({ success: true, message: "Sucursal y toda su infraestructura creada" });
 
     } catch (error) {
-        console.error("Error en Branches:", error);
-        return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+        console.error(error);
+        return NextResponse.json({ error: "Error al crear la infraestructura" }, { status: 500 });
     }
 }
 
@@ -67,9 +80,45 @@ export async function GET() {
     try {
         const client = await clientPromise;
         const db = client.db("after_hours");
-        const branches = await db.collection("branches").find({}).toArray();
+
+        const branches = await db.collection("branches").aggregate([
+            {
+                // Unir con Secciones
+                $lookup: {
+                    from: "sections",
+                    localField: "idSecciones",
+                    foreignField: "_id",
+                    as: "seccionesCompletas"
+                }
+            },
+            {
+                // "Desenrollar" secciones para poder buscar sus mesas
+                $unwind: { path: "$seccionesCompletas", preserveNullAndEmptyArrays: true }
+            },
+            {
+                // Unir con Mesas
+                $lookup: {
+                    from: "tables",
+                    localField: "seccionesCompletas.idMesas",
+                    foreignField: "_id",
+                    as: "seccionesCompletas.mesasCompletas"
+                }
+            },
+            {
+                // Volver a agrupar todo en la sucursal original
+                $group: {
+                    _id: "$_id",
+                    idSucursal: { $first: "$idSucursal" },
+                    nombre: { $first: "$nombre" },
+                    direccion: { $first: "$direccion" },
+                    tipoBar: { $first: "$tipoBar" },
+                    secciones: { $push: "$seccionesCompletas" }
+                }
+            }
+        ]).toArray();
+
         return NextResponse.json(branches);
     } catch (error) {
-        return NextResponse.json({ error: "Error al obtener sucursales" }, { status: 500 });
+        return NextResponse.json({ error: "Error al reconstruir sucursales" }, { status: 500 });
     }
 }

@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         // Generar el Token
         const token = await new SignJWT({
             id: usuario._id,
-            email: usuario.email, // Agregamos email al payload
+            email: usuario.email,
             username: usuario.username,
             tipo: usuario.tipo,
             tipoRol: rol,
@@ -49,9 +49,8 @@ export async function POST(req: Request) {
             user: {
                 email: usuario.email,
                 username: usuario.username,
-                nombre: usuario.empleadoInfo?.nombreCompleto || usuario.username,
                 tipo: usuario.tipo,
-                rol: rol
+                info: usuario.tipo === 'empleado' ? usuario.empleadoInfo : null
             }
         });
 

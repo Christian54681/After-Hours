@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import clientPromise from '../../../../../../lib/mongodb';
 
-
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'mi_secreto_super_seguro');
 
 export async function GET(req: Request) {
@@ -40,8 +39,12 @@ export async function GET(req: Request) {
             .toArray();
 
         return NextResponse.json({
+            success: true,
             count: empleados.length,
-            filtrosAplicados: rolUsuario === 'AdminGeneral' ? "Todos" : `Sucursal ${payload.idSucursal}`,
+            contexto: {
+                rolSolicitante: rolUsuario,
+                sucursalFiltrada: rolUsuario === 'AdminGeneral' ? "Global" : payload.idSucursal
+            },
             data: empleados
         });
 

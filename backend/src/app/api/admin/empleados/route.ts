@@ -65,14 +65,23 @@ export async function POST(req: Request) {
             tipo: "empleado",
             createdAt: new Date(),
             empleadoInfo: {
+                // Atributos base de EMPLEADO
                 idEmpleado: Math.floor(Math.random() * 10000),
                 nombreCompleto: datosEmpleado.nombreCompleto,
                 telefono: datosEmpleado.telefono || "",
-                tipoRol: datosEmpleado.tipoRol, // Mesero, Bartender, etc.
+                tipoRol: datosEmpleado.tipoRol,
                 estado: "Activo",
-                idSucursal: datosEmpleado.idSucursal
+                idSucursal: datosEmpleado.idSucursal,
+                // Cualquier otro campo específico que venga en datosEmpleado
+                ...datosEmpleado
             }
         };
+
+        // Limpieza: Borramos campos que ya pusimos arriba para no duplicarlos
+        delete nuevoEmpleado.empleadoInfo.nombreCompleto;
+        delete nuevoEmpleado.empleadoInfo.telefono;
+        delete nuevoEmpleado.empleadoInfo.tipoRol;
+        delete nuevoEmpleado.empleadoInfo.idSucursal;
 
         await db.collection("users").insertOne(nuevoEmpleado);
 
