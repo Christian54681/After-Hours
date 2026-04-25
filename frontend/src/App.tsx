@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound.tsx";
 // import Contadores from "./pages/Contador.tsx";
 // import Meseros from "./pages/Mesero.tsx";
 // import PersonalOperativo from "./pages/PersonalOperativo.tsx";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,25 +27,27 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Register />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/empleados" element={<Employees />} />
-          <Route path="/admin/turnos" element={<Shifts />} />
-          <Route path="/admin/proveedores" element={<Suppliers />} />
-          <Route path="/admin/mesas" element={<Tables />} />
-          <Route path="/empleado" element={<EmployeeDashboard />} />
-          {/* <Route path="/bartenders" element={<Bartenders />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Register />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/empleados" element={<Employees />} />
+            <Route path="/admin/turnos" element={<Shifts />} />
+            <Route path="/admin/proveedores" element={<Suppliers />} />
+            <Route path="/admin/mesas" element={<Tables />} />
+            <Route path="/empleado" element={<EmployeeDashboard />} />
+            {/* <Route path="/bartenders" element={<Bartenders />} />
           <Route path="/cajeros" element={<Cajeros />} />
           <Route path="/contadores" element={<Contadores />} />
           <Route path="/meseros" element={<Meseros />} />
           <Route path="/personalop" element={<PersonalOperativo />} /> */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
