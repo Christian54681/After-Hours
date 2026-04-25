@@ -7,29 +7,28 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'mi_secret
 
 export async function GET(req: Request) {
     try {
-        // extraer y verificar el Token
         const authHeader = req.headers.get('authorization');
         const token = authHeader?.split(' ')[1];
-
         if (!token) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
         const { payload } = await jwtVerify(token, JWT_SECRET);
-
-        // Validar rol (AdminGeneral ve todo, AdminSucursal ve solo su sucursal)
-        const rolesAdmitidos = ['AdminGeneral', 'AdminSucursal'];
         const rolUsuario = payload.tipoRol as string;
 
-        if (!rolesAdmitidos.includes(rolUsuario)) {
-            return NextResponse.json({ error: "No tienes permisos para esta acción" }, { status: 403 });
+        // 1. Verificación de seguridad
+        if (rolUsuario !== 'AdminGeneral' && rolUsuario !== 'AdminSucursal') {
+            return NextResponse.json({ error: "No autorizado" }, { status: 403 });
         }
 
         const client = await clientPromise;
         const db = client.db("after_hours");
-
         let filtro: any = { tipo: "empleado" };
 
-        // Si es AdminSucursal, solo permitimos ver empleados de su ID de sucursal
+        // 2. Filtro Inteligente
         if (rolUsuario === 'AdminSucursal') {
+            // Si por algún error el token no trae idSucursal, lanzamos error para no mostrar nada
+            if (!payload.idSucursal) {
+                return NextResponse.json({ error: "Sesión sin sucursal asignada" }, { status: 400 });
+            }
             filtro["empleadoInfo.idSucursal"] = payload.idSucursal;
         }
 
@@ -38,18 +37,16 @@ export async function GET(req: Request) {
             .project({ password: 0 })
             .toArray();
 
+        // 3. Respuesta limpia
         return NextResponse.json({
             success: true,
-            count: empleados.length,
-            contexto: {
-                rolSolicitante: rolUsuario,
-                sucursalFiltrada: rolUsuario === 'AdminGeneral' ? "Global" : payload.idSucursal
-            },
-            data: empleados
+            data: empleados // El front usará response.data.data para el map
         });
 
-    } catch (error) {
-        console.error("Error en GET Employees:", error);
-        return NextResponse.json({ error: "Token inválido o error de servidor" }, { status: 401 });
+    } catch (error: any) {
+        if (error.code === 'ERR_JWT_EXPIRED') {
+            return NextResponse.json({ error: "Sesión expirada" }, { status: 401 });
+        }
+        return NextResponse.json({ error: "Error de servidor" }, { status: 500 });
     }
 }

@@ -25,6 +25,26 @@ async function seed() {
         console.log("👥 Creando usuarios...");
         await db.collection("users").insertMany([
             {
+                username: "Christian.admin",
+                email: "christian@afterhours.com",
+                password: passHash,
+                tipo: "empleado",
+                createdAt: new Date(),
+                empleadoInfo: {
+                    // Atributos de clase EMPLEADO (Padre)
+                    idSucursal: "GLOBAL",
+                    idEmpleado: 505,
+                    nombreCompleto: "Christian Admin",
+                    telefono: "555-9876",
+                    tipoRol: "AdminGeneral",
+                    estado: "Activo",
+
+                    // Atributos de clase ADMIN SUCURSAL (Hija)
+                    idGlobal: 1,
+                    todasLasSucursales: ["SUC_001"]
+                }
+            },
+            {
                 username: "ana.admin",
                 email: "ana@afterhours.com",
                 password: passHash,
@@ -32,7 +52,7 @@ async function seed() {
                 createdAt: new Date(),
                 empleadoInfo: {
                     // Atributos de clase EMPLEADO (Padre)
-                    idSucursal: 1,
+                    idSucursal: "SUC_001",
                     idEmpleado: 201,
                     nombreCompleto: "Ana Sucursal",
                     telefono: "555-9876",
@@ -40,7 +60,7 @@ async function seed() {
                     estado: "Activo",
 
                     // Atributos de clase ADMIN SUCURSAL (Hija)
-                    idSucursalACargo: 1,
+                    idSucursalACargo: "SUC_001",
                     presupuestoSucursal: 50000.00
                 }
             },
@@ -52,7 +72,7 @@ async function seed() {
                 createdAt: new Date(),
                 empleadoInfo: {
                     // Atributos de clase EMPLEADO (Padre)
-                    idSucursal: 1,
+                    idSucursal: "SUC_001",
                     idEmpleado: 101,
                     nombreCompleto: "Josue Mesero",
                     telefono: "555-1234",
@@ -102,7 +122,7 @@ async function seed() {
         // 5. INSERTAR SUCURSAL (Referenciando los IDs de las secciones)
         console.log("🏢 Creando sucursal...");
         await db.collection("branches").insertOne({
-            idSucursal: 1,
+            idSucursal: "SUC_001",
             nombre: "After Hours Centro",
             direccion: "Calle Principal #123",
             tipoBar: "Premium",
