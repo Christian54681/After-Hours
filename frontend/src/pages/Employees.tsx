@@ -11,6 +11,7 @@ import { branches, employees as initialEmployees, type Employee } from "@/data/m
 import { validateShift, intervalsForDay } from "@/lib/shiftConflicts";
 
 const emptyEmployee = { name: "", branch: "", position: "" };
+const positions = ["Bartender", "Mesero", "Gerente", "Hostess", "Cocinero"];
 
 const Employees = () => {
     const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
@@ -145,8 +146,24 @@ const Employees = () => {
                         </div>
                         <div className="space-y-2">
                             <Label className="text-muted-foreground">Puesto</Label>
-                            <Input value={form.position} onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))}
-                                placeholder="Ej: Bartender" className="bg-muted/50 border-border" />
+                            <Select
+                                value={form.position}
+                                onValueChange={(value) =>
+                                    setForm((f) => ({ ...f, position: value }))
+                                }
+                            >
+                                <SelectTrigger className="bg-muted/50 border-border">
+                                    <SelectValue placeholder="Selecciona un puesto" />
+                                </SelectTrigger>
+
+                                <SelectContent className="bg-card border-border">
+                                    {positions.map((pos) => (
+                                        <SelectItem key={pos} value={pos}>
+                                            {pos}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                     <DialogFooter>

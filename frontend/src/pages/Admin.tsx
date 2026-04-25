@@ -7,8 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { MobileNav } from "@/components/admin/MobileNav";
 import { branches as initialBranches, type Branch } from "@/data/mockData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const emptyBranch = { name: "", category: "", location: "", manager: "" };
+const categories = ["Universitario", "Ejecutivo", "Playa", "Tradicional"];
 
 const Admin = () => {
   const [expandedBranch, setExpandedBranch] = useState<number | null>(null);
@@ -117,11 +119,27 @@ const Admin = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-muted-foreground">Categoría</Label>
-              <Input value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                placeholder="Ej: Cocktail Bar" className="bg-muted/50 border-border" />
+              <Select
+                value={form.category}
+                onValueChange={(value) =>
+                  setForm((f) => ({ ...f, category: value }))
+                }
+              >
+                <SelectTrigger className="bg-muted/50 border-border">
+                  <SelectValue placeholder="Selecciona una categoría" />
+                </SelectTrigger>
+
+                <SelectContent className="bg-card border-border">
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-muted-foreground">Ubicación</Label>
+              <Label className="text-muted-foreground">Dirección</Label>
               <Input value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
                 placeholder="Ej: Av. Reforma 234, CDMX" className="bg-muted/50 border-border" />
             </div>

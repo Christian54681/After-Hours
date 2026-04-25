@@ -13,6 +13,11 @@ import Suppliers from "./pages/Suppliers.tsx";
 import Tables from "./pages/Tables.tsx";
 import EmployeeDashboard from "./pages/EmployeeDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
+// import Bartenders from "./pages/Bartender.tsx";
+// import Cajeros from "./pages/Cajero.tsx";
+// import Contadores from "./pages/Contador.tsx";
+// import Meseros from "./pages/Mesero.tsx";
+// import PersonalOperativo from "./pages/PersonalOperativo.tsx";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +37,11 @@ const App = () => (
           <Route path="/admin/proveedores" element={<Suppliers />} />
           <Route path="/admin/mesas" element={<Tables />} />
           <Route path="/empleado" element={<EmployeeDashboard />} />
+          {/* <Route path="/bartenders" element={<Bartenders />} />
+          <Route path="/cajeros" element={<Cajeros />} />
+          <Route path="/contadores" element={<Contadores />} />
+          <Route path="/meseros" element={<Meseros />} />
+          <Route path="/personalop" element={<PersonalOperativo />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
