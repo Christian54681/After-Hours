@@ -1,13 +1,14 @@
 import { PersonalOperativo } from "./PersonalOperativo";
 
 export class Contador extends PersonalOperativo {
+
     //atributos
     public numCedula: string;
-    public nivelAcceso: number[];      
+    public nivelAcceso: number;        
 
     constructor(
         id: string,
-        nombre: string,
+        nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
@@ -16,15 +17,20 @@ export class Contador extends PersonalOperativo {
         areaActual: string,
         activo: boolean = true,
         numCedula: string,
-        nivelAcceso: number[] = [],
+        nivelAcceso: number = 2          //valor por defecto que tiene sentido
     ) {
-        super(id, nombre, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
+        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
 
         this.numCedula = numCedula;
         this.nivelAcceso = nivelAcceso;
     }
 
+    //metodos
     registrarGastos(monto: number): void {
+        if (monto <= 0) {
+            throw new Error("El monto de gastos debe ser mayor a 0");
+        }
+
         console.log(`Contador ${this.getNombre()} registró gastos por monto: $${monto}`);
     }
 

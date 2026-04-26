@@ -7,7 +7,7 @@ export class Bartender extends PersonalOperativo {
 
     constructor(
         id: string,
-        nombre: string,
+        nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
@@ -18,7 +18,7 @@ export class Bartender extends PersonalOperativo {
         especialidad: string,
         barraAsignada: string,
     ) {
-        super(id, nombre, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
+        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
 
         this.especialidad = especialidad;
         this.barraAsignada = barraAsignada;

@@ -7,7 +7,7 @@ export class AdminGeneral extends Empleado {
 
     constructor(
         id: string,
-        nombre: string,
+        nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
@@ -16,23 +16,23 @@ export class AdminGeneral extends Empleado {
         idGlobal: number,
         todasLasSucursales: number[] = [],
     ) {
-        super(id, nombre, email, telefono, estado, tipoRol, idEmpleado);
+        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado);
         this.idGlobal = idGlobal;
         this.todasLasSucursales = todasLasSucursales;
     }
 
     //métodfos
     crearSucursal(
-        nombre: string,
+        nombreCompleto: string,
         direccion: string,
         tipoBar: string
     ): void {
         console.log(`AdminGeneral ${this.getNombre()} está creando una nueva sucursal:`);
-        console.log(`Nombre: ${nombre}`);
+        console.log(`Nombre: ${nombreCompleto}`);
         console.log(`Dirección: ${direccion}`);
         console.log(`Tipo de Bar: ${tipoBar}`);
 
-        console.log(`Sucursal "${nombre}" creada exitosamente por ${this.getNombre()}`);
+        console.log(`Sucursal "${nombreCompleto}" creada exitosamente por ${this.getNombre()}`);
     }
 
     asignarRoles(idEmpleado: string, nuevoRol: string): void {

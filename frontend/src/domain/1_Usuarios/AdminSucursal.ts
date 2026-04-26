@@ -7,7 +7,7 @@ export class AdminSucursal extends Empleado {
 
     constructor(
         id: string,
-        nombre: string,
+        nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
@@ -16,7 +16,7 @@ export class AdminSucursal extends Empleado {
         idSucursalACargo: number,
         presupuestoSucursal: number,
     ) {
-        super(id, nombre, email, telefono, estado, tipoRol, idEmpleado);
+        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado);
         this.idSucursalACargo = idSucursalACargo;
         this.presupuestoSucursal = presupuestoSucursal;
     }
