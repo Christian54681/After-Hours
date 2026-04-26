@@ -66,6 +66,8 @@ export async function PUT(req: Request, { params }: { params: any }) {
         const resolvedParams = await params;
         const id = resolvedParams.id;
 
+        const { _id, ...datosParaActualizar } = body; // Evitamos que el _id se actualice aunque venga en el body
+
         const client = await clientPromise;
         const db = client.db("after_hours");
 
@@ -74,7 +76,7 @@ export async function PUT(req: Request, { params }: { params: any }) {
             { _id: new ObjectId(id) },
             {
                 $set: {
-                    ...body, // Esparcimos los campos que vengan (nombre, dirección, etc.)
+                    ...datosParaActualizar,
                     updatedAt: new Date()
                 }
             }
@@ -89,8 +91,8 @@ export async function PUT(req: Request, { params }: { params: any }) {
             message: "Sucursal actualizada correctamente"
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error en PUT sucursal:", error);
-        return NextResponse.json({ error: "Error al actualizar sucursal" }, { status: 500 });
+        return NextResponse.json({ error: "Error al actualizar sucursal", detalle: error.message }, { status: 500 });
     }
 }
