@@ -179,7 +179,7 @@ const Admin = () => {
                         <h3 className="text-lg font-semibold text-foreground">{b.nombre}</h3>
                         <div className="flex gap-2 items-center">
                           <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">ID: {b.idSucursal}</span>
-                          <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">{b.tipoBar}</span>
+                          <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full mt-1">{b.tipoBar}</span>
                         </div>
                       </div>
                     </div>
