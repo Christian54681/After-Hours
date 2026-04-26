@@ -25,6 +25,7 @@ export class Proveedor {
         this.clienteInfo = clienteInfo;
     }
 
+
     //métodos
     verMenu(): void {
         console.log(`Cliente ${this.username} (ID: ${this.idCliente}) está viendo el menú`);
@@ -42,6 +43,12 @@ export class Proveedor {
         console.log(`Cliente ${this.username} está eligiendo una mesa`);
 
         console.log("Mesa seleccionada correctamente.");
+    }
+
+    login(): void {
+        console.log(`Cliente ${this.username} está iniciando sesión`);
+
+        console.log("Autenticación exitosa. Bienvenido, " + this.username + "!");
     }
 
 }

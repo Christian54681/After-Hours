@@ -17,36 +17,51 @@ async function verificarAdmin(req: Request) {
 }
 
 // MODIFICAR EMPLEADO (PUT)
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: any }) {
     const admin = await verificarAdmin(req);
     if (!admin) return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
     try {
+        // 1. Manejar params como promesa (Para compatibilidad con Next.js 14/15)
+        const resolvedParams = await params;
+        const id = resolvedParams.id;
+
+        // 2. Validar que el ID sea un formato válido de MongoDB (24 caracteres hex)
+        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+            return NextResponse.json({ error: "Formato de ID inválido" }, { status: 400 });
+        }
+
         const body = await req.json();
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // Preparamos los campos a actualizar del diagrama
         const updateData: any = {};
         if (body.username) updateData.username = body.username;
         if (body.email) updateData.email = body.email;
         
-        // Campos específicos de empleadoInfo
-        if (body.tipoRol) updateData["empleadoInfo.tipoRol"] = body.tipoRol;
+        if (body.nombreCompleto) updateData["empleadoInfo.nombreCompleto"] = body.nombreCompleto;
         if (body.idSucursal) updateData["empleadoInfo.idSucursal"] = body.idSucursal;
-        if (body.telefono) updateData["empleadoInfo.telefono"] = body.telefono;
-        if (body.estado) updateData["empleadoInfo.estado"] = body.estado;
+        if (body.tipoRol) updateData["empleadoInfo.tipoRol"] = body.tipoRol;
 
+        updateData.updatedAt = new Date();
+
+        // 3. Ejecutar la actualización
         const result = await db.collection("users").updateOne(
-            { _id: new ObjectId(params.id), tipo: "empleado" },
+            { _id: new ObjectId(id), tipo: "empleado" }, 
             { $set: updateData }
         );
 
-        if (result.matchedCount === 0) return NextResponse.json({ error: "Empleado no encontrado" }, { status: 404 });
+        if (result.matchedCount === 0) {
+            // Si llega aquí, el ID existe pero el campo 'tipo' no es 'empleado' 
+            // o el ID no existe en la colección 'users'
+            return NextResponse.json({ error: "Empleado no encontrado con esos criterios" }, { status: 404 });
+        }
 
         return NextResponse.json({ success: true, message: "Empleado actualizado" });
-    } catch (error) {
-        return NextResponse.json({ error: "ID inválido o error de servidor" }, { status: 400 });
+
+    } catch (error: any) {
+        console.error("Error detallado:", error);
+        return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
     }
 }
 
@@ -56,12 +71,19 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     if (!admin) return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
     try {
+        const resolvedParams = await params;
+        const id = resolvedParams.id;
+
+        if (!id || id.length !== 24) {
+            return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+        }
+
         const client = await clientPromise;
         const db = client.db("after_hours");
 
         // cambiamos el estado a Inactivo
         const result = await db.collection("users").updateOne(
-            { _id: new ObjectId(params.id), tipo: "empleado" },
+            { _id: new ObjectId(id), tipo: "empleado" },
             { $set: { "empleadoInfo.estado": "Inactivo" } }
         );
 
@@ -69,6 +91,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
         return NextResponse.json({ success: true, message: "Empleado dado de baja (Inactivo)" });
     } catch (error) {
+        console.error("Error en DELETE:", error);
         return NextResponse.json({ error: "Error al procesar la baja" }, { status: 400 });
     }
 }

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         const existe = await db.collection("users").findOne({
             $or: [{ username }, { email }]
         });
-        
+
         if (existe) {
             return NextResponse.json({ error: "El usuario o email ya existe" }, { status: 400 });
         }
@@ -32,6 +32,13 @@ export async function POST(req: Request) {
             email: email.toLowerCase().trim(),
             password: hashedPassword,
             tipo: "Cliente", // Forzamos tipo cliente
+            createdAt: new Date(),
+            // todo esto es opcional pero es para mantener consistencia
+            clienteInfo: {
+                puntosLealtad: 0,
+                telefono: "",
+                preferencias: []
+            }
         };
 
         await db.collection("users").insertOne(nuevoCliente);

@@ -23,7 +23,7 @@ export class AdminSucursal extends Empleado {
     }
 
     //métodfos
-   supervisarInventario(): void {
+    supervisarInventario(): void {
         console.log(`AdminSucursal ${this.getNombre()} está supervisando inventario de la sucursal ${this.idSucursalACargo}`);
     }
 
