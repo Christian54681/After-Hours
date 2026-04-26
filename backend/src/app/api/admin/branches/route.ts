@@ -30,6 +30,7 @@ export async function POST(req: Request) {
             encargado: payload.username || payload.sub || "Admin",
             seccionesIds: [], // Inicia vacía para ser llenada luego
             createdAt: new Date(),
+            estado: "Activo"
         };
 
         await db.collection("branches").insertOne(nuevaSucursal);
@@ -56,6 +57,11 @@ export async function GET() {
         const db = client.db("after_hours");
 
         const branches = await db.collection("branches").aggregate([
+            {
+                $match: {
+                    estado: { $ne: "Inactivo" }
+                }
+            },
             {
                 $lookup: {
                     from: "sections",

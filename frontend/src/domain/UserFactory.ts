@@ -1,5 +1,5 @@
 // domain/UserFactory.ts
-import { Cliente } from "./9_Cliente/Cliente";
+//import { Cliente } from "./9_Cliente/Cliente";
 import { Mesero } from "./1_Usuarios/Mesero";
 import { AdminSucursal } from "./1_Usuarios/AdminSucursal";
 
@@ -8,7 +8,7 @@ export class UserFactory {
         const { tipo, email, username, info, _id } = data;
 
         if (tipo === "Cliente") {
-            return new Cliente(_id, username, email, info, tipo);
+            return //new Cliente(_id, username, email, info, tipo);
         }
 
         if (tipo === "empleado") {
