@@ -115,13 +115,13 @@ const Employees = () => {
 
     const openNew = () => {
         setEditing(null);
-        setForm({ 
+        setForm({
             username: `user_${Date.now()}`,
-            email: "", 
-            password: "", 
-            nombreCompleto: "", 
-            idSucursal: "", 
-            tipoRol: "", 
+            email: "",
+            password: "",
+            nombreCompleto: "",
+            idSucursal: "",
+            tipoRol: "",
             telefono: "",
             zonaAsignada: "",
             mesasACargo: "",
@@ -160,8 +160,13 @@ const Employees = () => {
     };
 
     const save = async () => {
-        if (!form.nombreCompleto.trim() || !form.email.trim()) {
-            toast.error("Por favor completa los campos obligatorios");
+        if (!form.nombreCompleto?.trim() || !form.email?.trim()) {
+            toast.error("Nombre y Email son obligatorios");
+            return;
+        }
+
+        if (!editing && !form.password?.trim()) {
+            toast.error("La contraseña es obligatoria para nuevos empleados");
             return;
         }
 
@@ -169,11 +174,44 @@ const Employees = () => {
         const url = editing ? `${urlbase}/admin/empleados/${editing._id}` : `${urlbase}/admin/empleados`;
         const method = editing ? "PUT" : "POST";
 
+        let bodyEnvio;
+
+        if (method === "POST") {
+            // Estructura exacta para el api
+            bodyEnvio = {
+                email: form.email,
+                password: form.password,
+                datosEmpleado: {
+                    // Campos base
+                    nombreCompleto: form.nombreCompleto,
+                    telefono: form.telefono,
+                    tipoRol: form.tipoRol,
+                    idSucursal: form.idSucursal,
+                    // Campos dinámicos (se incluyen todos los del form)
+                    zonaAsignada: form.zonaAsignada,
+                    mesasACargo: form.mesasACargo,
+                    especialidad: form.especialidad,
+                    barraAsignada: form.barraAsignada,
+                    numCedula: form.numCedula,
+                    nivelAcceso: form.nivelAcceso,
+                    numCaja: form.numCaja,
+                    fondoInicial: form.fondoInicial,
+                    montoActual: form.montoActual
+                }
+            };
+        } else {
+            const { _id, ...datosAEditar } = form;
+            bodyEnvio = datosAEditar;
+        }
+
         try {
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify(form)
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(bodyEnvio)
             });
 
             if (res.ok) {
@@ -185,7 +223,8 @@ const Employees = () => {
                 toast.error(err.error || "Error al guardar");
             }
         } catch (error) {
-            toast.error("Error de red");
+            console.error("Error al guardar:", error);
+            toast.error("Error de red o servidor");
         }
     };
 
@@ -325,7 +364,7 @@ const Employees = () => {
                                                 <Button variant="secondary" size="sm" onClick={() => openEdit(e)}>
                                                     <Pencil className="w-3 h-3 mr-1" /> Editar
                                                 </Button>
-                                                <Button variant="outline" size="sm" onClick={ () => deleteEmployee(e._id) }
+                                                <Button variant="outline" size="sm" onClick={() => deleteEmployee(e._id)}
                                                     className="text-muted-foreground hover:text-foreground hover:border-muted-foreground">
                                                     <Trash2 className="w-3 h-3 mr-1" /> Eliminar
                                                 </Button>

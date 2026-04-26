@@ -22,11 +22,9 @@ export async function PUT(req: Request, { params }: { params: any }) {
     if (!admin) return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
     try {
-        // 1. Manejar params como promesa (Para compatibilidad con Next.js 14/15)
         const resolvedParams = await params;
         const id = resolvedParams.id;
 
-        // 2. Validar que el ID sea un formato válido de MongoDB (24 caracteres hex)
         if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
             return NextResponse.json({ error: "Formato de ID inválido" }, { status: 400 });
         }
@@ -35,29 +33,56 @@ export async function PUT(req: Request, { params }: { params: any }) {
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        const updateData: any = {};
+        // Definir los campos permitidos por cada rol para limpiar basura
+        const camposPorRol: Record<string, string[]> = {
+            "Mesero": ["zonaAsignada", "mesasACargo"],
+            "Bartender": ["especialidad", "barraAsignada"],
+            "Contador": ["numCedula", "nivelAcceso"],
+            "Cajero": ["numCaja", "fondoInicial", "montoActual"],
+            "AdminSucursal": [],
+            "AdminGeneral": []
+        };
+
+        const nuevoRol = body.tipoRol || "Empleado";
+
+        // Esto ELIMINA cualquier campo que no esté en esta lista
+        const nuevaInfo: any = {
+            nombreCompleto: body.nombreCompleto,
+            idSucursal: body.idSucursal,
+            tipoRol: nuevoRol,
+            telefono: body.telefono || "",
+            estado: body.estado || "Activo",
+        };
+
+        // Solo agregar los campos que corresponden al rol actual
+        if (camposPorRol[nuevoRol]) {
+            camposPorRol[nuevoRol].forEach(campo => {
+                if (body[campo] !== undefined) {
+                    nuevaInfo[campo] = body[campo];
+                }
+            });
+        }
+
+        // Preparar el objeto de actualización principal
+        const updateData: any = {
+            updatedAt: new Date(),
+            empleadoInfo: nuevaInfo
+        };
+
         if (body.username) updateData.username = body.username;
         if (body.email) updateData.email = body.email;
-        
-        if (body.nombreCompleto) updateData["empleadoInfo.nombreCompleto"] = body.nombreCompleto;
-        if (body.idSucursal) updateData["empleadoInfo.idSucursal"] = body.idSucursal;
-        if (body.tipoRol) updateData["empleadoInfo.tipoRol"] = body.tipoRol;
 
-        updateData.updatedAt = new Date();
-
-        // 3. Ejecutar la actualización
+        // Ejecutar la actualización
         const result = await db.collection("users").updateOne(
             { _id: new ObjectId(id), tipo: "empleado" }, 
             { $set: updateData }
         );
 
         if (result.matchedCount === 0) {
-            // Si llega aquí, el ID existe pero el campo 'tipo' no es 'empleado' 
-            // o el ID no existe en la colección 'users'
-            return NextResponse.json({ error: "Empleado no encontrado con esos criterios" }, { status: 404 });
+            return NextResponse.json({ error: "Empleado no encontrado" }, { status: 404 });
         }
 
-        return NextResponse.json({ success: true, message: "Empleado actualizado" });
+        return NextResponse.json({ success: true, message: "Empleado actualizado y perfil limpiado" });
 
     } catch (error: any) {
         console.error("Error detallado:", error);
