@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-
 import { jwtVerify } from 'jose';
 import clientPromise from '../../../../../lib/mongodb';
 
@@ -14,50 +13,48 @@ export async function POST(req: Request) {
         // Verificar Token del Admin
         const authHeader = req.headers.get('authorization');
         const token = authHeader?.split(' ')[1];
-
         if (!token) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
         try {
             const { payload } = await jwtVerify(token, JWT_SECRET);
-            const rolesAutorizados = ['AdminGeneral', 'AdminSucursal'];
-
-            if (!rolesAutorizados.includes(payload.tipoRol as string)) {
-                return NextResponse.json({ error: "No tienes permisos de administrador" }, { status: 403 });
+            if (!['AdminGeneral', 'AdminSucursal'].includes(payload.tipoRol as string)) {
+                return NextResponse.json({ error: "No autorizado" }, { status: 403 });
             }
-        } catch (err) {
-            return NextResponse.json({ error: "Token inválido o expirado" }, { status: 401 });
+        } catch {
+            return NextResponse.json({ error: "Token inválido" }, { status: 401 });
         }
 
-        // VALIDACIÓN DE DATOS
-        if (!datosEmpleado || !datosEmpleado.nombreCompleto) {
-            return NextResponse.json({ error: "El nombre completo es obligatorio para empleados" }, { status: 400 });
+        // Validación de datos mínimos
+        if (!email || !password || !datosEmpleado?.nombreCompleto) {
+            return NextResponse.json({ error: "Email, contraseña y nombre son obligatorios" }, { status: 400 });
         }
 
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // GENERACIÓN AUTOMÁTICA DEL USERNAME
+        // Generación de Username Único
         const baseUsername = datosEmpleado.nombreCompleto
             .toLowerCase()
             .trim()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar acentos
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/ñ/g, "n")
             .split(/\s+/)
             .slice(0, 2)
             .join('.');
 
-        // Evitar colisión de usernames
         const existeUsername = await db.collection("users").findOne({ username: baseUsername });
         const finalUsername = existeUsername
-            ? `${baseUsername}${Math.floor(Math.random() * 99)}`
+            ? `${baseUsername}${Math.floor(Math.random() * 999)}`
             : baseUsername;
 
-        // VERIFICAR EMAIL DUPLICADO
-        const existeEmail = await db.collection("users").findOne({ email });
-        if (existeEmail) return NextResponse.json({ error: "El email ya está registrado" }, { status: 400 });
+        // Verificar Duplicados
+        const existeEmail = await db.collection("users").findOne({ email: email.toLowerCase().trim() });
+        if (existeEmail) return NextResponse.json({ error: "Este correo ya está registrado" }, { status: 400 });
 
-        // ENCRIPTAR Y GUARDAR
+        // Encriptar Contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Construir Objeto Final
         const nuevoEmpleado = {
             username: finalUsername,
             email: email.toLowerCase().trim(),
@@ -65,34 +62,27 @@ export async function POST(req: Request) {
             tipo: "empleado",
             createdAt: new Date(),
             empleadoInfo: {
-                // Atributos base de EMPLEADO
-                idEmpleado: Math.floor(Math.random() * 10000),
                 nombreCompleto: datosEmpleado.nombreCompleto,
                 telefono: datosEmpleado.telefono || "",
-                tipoRol: datosEmpleado.tipoRol,
-                estado: "Activo",
+                tipoRol: datosEmpleado.tipoRol || "Empleado",
                 idSucursal: datosEmpleado.idSucursal,
-                // Cualquier otro campo específico que venga en datosEmpleado
-                ...datosEmpleado
+                estado: "Activo",
             }
         };
 
-        // Limpieza: Borramos campos que ya pusimos arriba para no duplicarlos
-        delete nuevoEmpleado.empleadoInfo.nombreCompleto;
-        delete nuevoEmpleado.empleadoInfo.telefono;
-        delete nuevoEmpleado.empleadoInfo.tipoRol;
-        delete nuevoEmpleado.empleadoInfo.idSucursal;
-
         await db.collection("users").insertOne(nuevoEmpleado);
+
+        // AQUÍ IRÍA LA FUNCIÓN DE ENVIAR CORREO
+        console.log(`Enviando correo a ${email} con user: ${finalUsername} y pass: ${password}`);
 
         return NextResponse.json({
             success: true,
             message: "Empleado creado con éxito",
-            usernameGenerado: finalUsername
+            username: finalUsername
         });
 
     } catch (error) {
-        console.error("Error en Creación Empleado:", error);
-        return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
+        console.error("Error:", error);
+        return NextResponse.json({ error: "Error interno" }, { status: 500 });
     }
 }
