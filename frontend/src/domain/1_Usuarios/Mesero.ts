@@ -4,12 +4,11 @@ import { PersonalOperativo } from "./PersonalOperativo";
 export class Mesero extends PersonalOperativo {
     // Atributos
     public zonaAsignada: string;
-    public mesasACargo: number;      
+    public mesasACargo: number;
 
 
 
     constructor(
-        id: string,
         nombreCompleto: string,
         email: string,
         telefono: string,
@@ -19,9 +18,11 @@ export class Mesero extends PersonalOperativo {
         areaActual: string,
         activo: boolean = true,
         zonaAsignada: string,
-        mesasACargo: number=0
+        mesasACargo: number = 0,
+        createdAt?: Date
+
     ) {
-        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, undefined, undefined, createdAt);
 
 
         this.zonaAsignada = zonaAsignada;

@@ -2,32 +2,30 @@
 export class Usuario {
 
     //atributos
-    public id: string;
-    public nombreCompleto: string;   
+    public nombreCompleto: string;
     public email: string;
     public telefono: string;
     public estado: string;
     public username: string;
-    public password: string;
-    public createdAt: Date;
+    //public password: string;
+    //public createdAt: Date;
 
     constructor(
-        id: string,
         nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
         username?: string,
-        password?: string
+        password?: string,
+        createdAt?: Date
     ) {
-        this.id = id;
         this.nombreCompleto = nombreCompleto;
         this.email = email;
         this.telefono = telefono;
         this.estado = estado;
         this.username = username || email.split('@')[0];
-        this.password = password || "";           
-        this.createdAt = new Date();
+        //this.password = password || "";
+        //this.createdAt = createdAt || new Date();
     }
 
     //metodos
@@ -41,9 +39,7 @@ export class Usuario {
     }
 
     // Getters
-    getId(): string {
-        return this.id;
-    }
+
 
     getNombre(): string {
         return this.nombreCompleto;

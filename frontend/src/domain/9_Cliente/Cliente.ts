@@ -1,5 +1,5 @@
 //Cliente
-export class Proveedor {
+export class Cliente {
     //atributod
     public idCliente: number;
     public username: string;

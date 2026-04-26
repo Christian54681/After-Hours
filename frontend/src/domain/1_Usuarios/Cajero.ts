@@ -8,7 +8,6 @@ export class Cajero extends PersonalOperativo {
     public montoActual: number;
 
     constructor(
-        id: string,
         nombreCompleto: string,
         email: string,
         telefono: string,
@@ -21,7 +20,7 @@ export class Cajero extends PersonalOperativo {
         fondoInicial: number = 0.0,
         montoActual: number = 0.0
     ) {
-        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
 
         this.numeroCaja = numeroCaja;
         this.fondoInicial = fondoInicial;

@@ -8,7 +8,6 @@ export class Contador extends PersonalOperativo {
     public nivelAcceso: number;        
 
     constructor(
-        id: string,
         nombreCompleto: string,
         email: string,
         telefono: string,
@@ -20,7 +19,7 @@ export class Contador extends PersonalOperativo {
         numCedula: string,
         nivelAcceso: number = 2          //valor por defecto que tiene sentido
     ) {
-        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo);
 
         this.numCedula = numCedula;
         this.nivelAcceso = nivelAcceso;

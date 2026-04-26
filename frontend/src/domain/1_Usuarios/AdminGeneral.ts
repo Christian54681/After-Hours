@@ -7,7 +7,6 @@ export class AdminGeneral extends Empleado {
     public todasLasSucursales: number[];
 
     constructor(
-        id: string,
         nombreCompleto: string,
         email: string,
         telefono: string,
@@ -16,8 +15,9 @@ export class AdminGeneral extends Empleado {
         idEmpleado: string,
         idGlobal: number,
         todasLasSucursales: number[] = [],
+        createdAt?: Date,
     ) {
-        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, undefined, undefined, createdAt); 
         this.idGlobal = idGlobal;
         this.todasLasSucursales = todasLasSucursales;
     }

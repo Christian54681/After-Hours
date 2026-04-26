@@ -8,7 +8,6 @@ export class PersonalOperativo extends Empleado {
     public activo: boolean;
 
     constructor(
-        id: string,
         nombreCompleto: string,
         email: string,
         telefono: string,
@@ -16,10 +15,10 @@ export class PersonalOperativo extends Empleado {
         tipoRol: string,
         idEmpleado: string,
         areaActual: string,
-        activo: boolean = true
+        activo: boolean = true,
+        createdAt?: Date
     ) {
-        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado);
-
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, undefined, undefined, createdAt);
         this.areaActual = areaActual;
         this.activo = activo;
     }
@@ -27,7 +26,7 @@ export class PersonalOperativo extends Empleado {
     //metodos
     consultarTareas(): any[] {
         console.log(`${this.getNombre()} está consultando sus tareas en el área: ${this.areaActual}`);
-        return []; 
+        return [];
     }
 
     actualizarEstadoTarea(idTarea: number): void {

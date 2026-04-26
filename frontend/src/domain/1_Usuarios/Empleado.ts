@@ -5,27 +5,22 @@ export class Empleado extends Usuario {
 
     //atributos
     public idEmpleado: string;
-    public tipoRol: string;  
+    public tipoRol: string;
 
     constructor(
-        id: string,
-        nombreCompleto: string,           
+        nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
         tipoRol: string,
         idEmpleado: string,
         username?: string,
-        password?: string
+        password?: string,
+        createdAt?: Date,
     ) {
-        super(id, nombreCompleto, email, telefono, estado);
-
-        this.idEmpleado = idEmpleado || id;
+        super(nombreCompleto, email, telefono, estado, username, password, createdAt);
+        this.idEmpleado = idEmpleado;
         this.tipoRol = tipoRol;
-        this.nombreCompleto = nombreCompleto;
-        this.username = username || email.split('@')[0];
-        this.password = password || "";           
-        this.createdAt = new Date();
     }
 
     //metodos

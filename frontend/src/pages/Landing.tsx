@@ -6,6 +6,7 @@ import heroBar from "@/assets/hero-bar.jpg";
 import cocktail from "@/assets/cocktail.jpg";
 import lounge from "@/assets/lounge.jpg";
 import liveMusic from "@/assets/live-music.jpg";
+import { useAuth } from "@/context/AuthContext";
 
 const Landing = () => {
   const experiences = [
@@ -34,6 +35,13 @@ const Landing = () => {
     { name: "Obsidiana Sur", area: "Roma Norte", hours: "19:00 - 04:00" },
     { name: "Aurora Lounge", area: "Condesa", hours: "20:00 - 03:00" },
   ];
+
+  const { user } = useAuth()
+
+  const handlePrueba = () => {
+    console.log("Usuario actual:", user);
+  }
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -189,6 +197,26 @@ const Landing = () => {
             </div>
           </div>
         </Card>
+      </section>
+
+      {/* Sección de prubas para modelos */}
+      <section className="py-24 container">
+        <div className="text-center mb-16">
+          <span className="text-xs uppercase tracking-[0.3em] text-primary">Pruebas de modelos</span>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Card className="glass-card">
+            <CardContent>
+              <h3 className="font-display text-2xl mb-2">
+                {user
+                  ? `Bienvenido, ${user.username || user.nombre || 'Usuario'}`
+                  : "No hay usuario autenticado"
+                }
+              </h3>
+              <button onClick={handlePrueba}>Probar Modelo</button>
+            </CardContent>
+          </Card>
+        </div>
       </section>
 
       {/* Footer */}

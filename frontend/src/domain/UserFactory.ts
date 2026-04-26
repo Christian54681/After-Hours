@@ -1,52 +1,82 @@
 // domain/UserFactory.ts
-import { Cliente } from "./9_Cliente/Cliente";
-import { Mesero } from "./1_Usuarios/Mesero";
+import { AdminGeneral } from "./1_Usuarios/AdminGeneral";
 import { AdminSucursal } from "./1_Usuarios/AdminSucursal";
+import { Bartender } from "./1_Usuarios/Bartender";
+import { Cajero } from "./1_Usuarios/Cajero";
+import { Contador } from "./1_Usuarios/Contador";
+import { Mesero } from "./1_Usuarios/Mesero";
+import { PersonalOperativo } from "./1_Usuarios/PersonalOperativo";
+import { Usuario } from "./1_Usuarios/Usuario";
 
 export class UserFactory {
-    static crearUsuario(data: any) {
-        const { tipo, email, username, info, _id } = data;
 
-        if (tipo === "Cliente") {
-            return new Cliente(_id, username, email, info, tipo);
+    static crearUsuario(data: any) {
+        // Asegúrate de que createdAt esté disponible en 'data'
+        const { tipo, email, username, info, createdAt } = data;
+
+        if (!tipo || !info) {
+            throw new Error("Datos insuficientes para crear usuario");
         }
 
-        if (tipo === "empleado") {
-            switch (info.tipoRol) {
-                case "Mesero":
-                    return new Mesero(
-                        _id,                     // 1. id
-                        info.nombreCompleto,    // 2. nombre
-                        email,                  // 3. email
-                        info.telefono || "",    // 4. telefono
-                        info.estado || 'activo',// 5. estado
-                        info.tipoRol,           // 6. tipoRol
-                        info.idEmpleado.toString(), // 7. idEmpleado
-                        info.areaActual,        // 8. areaActual
-                        info.activo ?? true,    // 9. activo (boolean)
-                        info.zonaAsignada,      // 10. zonaAsignada
-                        info.mesasACargo || []  // 11. mesasACargo
-                    );
+        // Convertimos a Date real
+        const fechaCreacion = createdAt ? new Date(createdAt) : new Date();
 
-                case "AdminSucursal":
-                case "AdminGeneral":
-                    return new AdminSucursal(
-                        _id,
+        // Caso Usuario Base
+        if (tipo === "Usuario" || tipo === "usuario" || tipo === "Cliente" || tipo === "cliente") {
+            return new Usuario(
+                info.nombreCompleto || info.nombre || "Usuario Anónimo",
+                email,
+                info.telefono || "",
+                info.estado || 'activo',
+                username, // username
+                undefined, // password
+                fechaCreacion
+            );
+        }
+
+        // Caso Empleado
+        if (tipo === "Empleado" || tipo === "empleado") {
+            const rol = info.tipoRol || "";
+
+            switch (rol) {
+                case "Mesero":
+
+                    return new Mesero(
+
                         info.nombreCompleto,
                         email,
                         info.telefono || "",
                         info.estado || 'activo',
                         info.tipoRol,
-                        info.idEmpleado.toString(),
-                        info.idSucursalACargo || 0,
-                        info.presupuestoSucursal || 0
+                        info.idEmpleado?.toString(),
+                        info.areaActual || "Sin asignar",
+                        info.activo ?? true,
+                        info.zonaAsignada || "Sin zona",
+                        info.mesasACargo || 0,
+                        fechaCreacion
+
                     );
 
-                
+                case "AdminGeneral":
+                    return new AdminGeneral(
+                        info.nombreCompleto,
+                        email,
+                        info.telefono || "",
+                        info.estado || 'activo',
+                        info.tipoRol,
+                        info.idEmpleado?.toString(),
+                        info.idGlobal || 1,
+                        info.todasLasSucursales || [],
+                        fechaCreacion // <--- Orden correcto
+                    );
+
+                // ... (Aplica la misma lógica para los demás roles asegurando el orden)
+
                 default:
-                    throw new Error(`Rol de empleado no reconocido: ${info.tipoRol}`);
+                    throw new Error(`Rol de empleado no reconocido: ${rol}`);
             }
         }
-        throw new Error("Tipo de usuario desconocido");
+
+        throw new Error(`Tipo de usuario desconocido: ${tipo}`);
     }
 }
