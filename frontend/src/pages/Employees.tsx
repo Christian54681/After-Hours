@@ -68,6 +68,28 @@ const Employees = () => {
         }
     };
 
+    // ELIMINAR EMPLEADO
+    const deleteEmployee = async (id: string) => {
+        if (!confirm("¿Confirma que desea eliminar este empleado?")) return;
+
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${urlbase}/admin/empleados/${id}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                toast.success("Empleado eliminado");
+                fetchData(); // Recargamos la lista
+            } else {
+                toast.error(data.error || "Error al eliminar empleado");
+            }
+        } catch (error) {
+            toast.error("Error de conexión");
+        }
+    };
+
     useEffect(() => { fetchData(); }, []);
 
     // FILTRADO
@@ -191,7 +213,7 @@ const Employees = () => {
                                                 <Button variant="secondary" size="sm" onClick={() => openEdit(e)}>
                                                     <Pencil className="w-3 h-3 mr-1" /> Editar
                                                 </Button>
-                                                <Button variant="outline" size="sm" onClick={ () => alert("Función de eliminación no implementada") }
+                                                <Button variant="outline" size="sm" onClick={ () => deleteEmployee(e._id) }
                                                     className="text-muted-foreground hover:text-foreground hover:border-muted-foreground">
                                                     <Trash2 className="w-3 h-3 mr-1" /> Eliminar
                                                 </Button>

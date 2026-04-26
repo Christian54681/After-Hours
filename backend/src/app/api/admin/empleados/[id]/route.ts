@@ -71,12 +71,19 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     if (!admin) return NextResponse.json({ error: "No autorizado" }, { status: 403 });
 
     try {
+        const resolvedParams = await params;
+        const id = resolvedParams.id;
+
+        if (!id || id.length !== 24) {
+            return NextResponse.json({ error: "ID inválido" }, { status: 400 });
+        }
+
         const client = await clientPromise;
         const db = client.db("after_hours");
 
         // cambiamos el estado a Inactivo
         const result = await db.collection("users").updateOne(
-            { _id: new ObjectId(params.id), tipo: "empleado" },
+            { _id: new ObjectId(id), tipo: "empleado" },
             { $set: { "empleadoInfo.estado": "Inactivo" } }
         );
 
@@ -84,6 +91,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
         return NextResponse.json({ success: true, message: "Empleado dado de baja (Inactivo)" });
     } catch (error) {
+        console.error("Error en DELETE:", error);
         return NextResponse.json({ error: "Error al procesar la baja" }, { status: 400 });
     }
 }

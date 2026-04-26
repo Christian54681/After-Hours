@@ -14,16 +14,16 @@ export async function GET(req: Request) {
         const { payload } = await jwtVerify(token, JWT_SECRET);
         const rolUsuario = payload.tipoRol as string;
 
-        // 1. Verificación de seguridad
+        // Verificación de seguridad
         if (rolUsuario !== 'AdminGeneral' && rolUsuario !== 'AdminSucursal') {
             return NextResponse.json({ error: "No autorizado" }, { status: 403 });
         }
 
         const client = await clientPromise;
         const db = client.db("after_hours");
-        let filtro: any = { tipo: "empleado" };
+        let filtro: any = { tipo: "empleado", "empleadoInfo.estado": "Activo" };
 
-        // 2. Filtro Inteligente
+        // Filtro Inteligente
         if (rolUsuario === 'AdminSucursal') {
             // Si por algún error el token no trae idSucursal, lanzamos error para no mostrar nada
             if (!payload.idSucursal) {
@@ -37,7 +37,7 @@ export async function GET(req: Request) {
             .project({ password: 0 })
             .toArray();
 
-        // 3. Respuesta limpia
+        // Respuesta limpia
         return NextResponse.json({
             success: true,
             data: empleados // El front usará response.data.data para el map
