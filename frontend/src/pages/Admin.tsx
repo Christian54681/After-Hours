@@ -303,17 +303,17 @@ const Admin = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-muted-foreground">ID Sucursal</Label>
-                <Input value={form.idSucursal} onChange={(e) => setForm((f) => ({ ...f, idSucursal: e.target.value }))} className="bg-muted/50 border-border" />
+                <Input placeholder="Ej: SUC-001" value={form.idSucursal} onChange={(e) => setForm((f) => ({ ...f, idSucursal: e.target.value }))} className="bg-muted/50 border-border" />
               </div>
               <div className="space-y-2">
                 <Label className="text-muted-foreground">Nombre</Label>
-                <Input value={form.nombre} onChange={(e) => setForm((f) => ({ ...f, nombre: e.target.value }))} className="bg-muted/50 border-border" />
+                <Input placeholder="Ej: Bar Borracho" value={form.nombre} onChange={(e) => setForm((f) => ({ ...f, nombre: e.target.value }))} className="bg-muted/50 border-border" />
               </div>
             </div>
             <div className="space-y-2">
               <Label className="text-muted-foreground">Categoría</Label>
               <Select value={form.tipoBar} onValueChange={(val) => setForm((f) => ({ ...f, tipoBar: val }))}>
-                <SelectTrigger className="bg-muted/50 border-border"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-border"><SelectValue placeholder="Seleccione una categoría"/></SelectTrigger>
                 <SelectContent className="bg-card border-border">
                   {categories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                 </SelectContent>
@@ -321,7 +321,7 @@ const Admin = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-muted-foreground">Dirección</Label>
-              <Input value={form.direccion} onChange={(e) => setForm((f) => ({ ...f, direccion: e.target.value }))} className="bg-muted/50 border-border" />
+              <Input placeholder="Ej: Av. Insurgentes Sur #123, CDMX" value={form.direccion} onChange={(e) => setForm((f) => ({ ...f, direccion: e.target.value }))} className="bg-muted/50 border-border" />
             </div>
           </div>
           <DialogFooter>
