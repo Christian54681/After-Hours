@@ -1,40 +1,49 @@
+//Empleado
 import { Usuario } from "./Usuario";
 
-export class Empleado extends Usuario{
+export class Empleado extends Usuario {
+
     //atributos
-    public idEmpleado: string
-    public tipoRol: string
+    public idEmpleado: string;
+    public tipoRol: string;  
 
     constructor(
         id: string,
-        nombre: string,
+        nombreCompleto: string,           
         email: string,
         telefono: string,
         estado: string = 'activo',
-        idEmpleado: string,
         tipoRol: string,
+        idEmpleado: string,
+        username?: string,
+        password?: string
+    ) {
+        super(id, nombreCompleto, email, telefono, estado);
 
-    ){
-        super(id, nombre, email, telefono, estado);//llamada a los atributos de Usuario.ts
-
-        this.idEmpleado = idEmpleado || id;//idEmpleado o id
+        this.idEmpleado = idEmpleado || id;
         this.tipoRol = tipoRol;
-
+        this.nombreCompleto = nombreCompleto;
+        this.username = username || email.split('@')[0];
+        this.password = password || "";           
+        this.createdAt = new Date();
     }
 
-    //métodos
-    registrarEntrada(): void{
-        console.log(`${this.getNombre()} (${this.tipoRol}) registró su entrada`);   
+    //metodos
+    registrarEntrada(): void {
+        console.log(`${this.nombreCompleto} (${this.tipoRol}) registró su entrada`);
     }
 
-    registrarSalida(): void{
-        console.log(`${this.getNombre()} (${this.tipoRol}) registró su salida`);   
+    registrarSalida(): void {
+        console.log(`${this.nombreCompleto} (${this.tipoRol}) registró su salida`);
+    }
 
+    actualizarDatos(): void {
+        console.log(`Datos del empleado ${this.nombreCompleto} (${this.tipoRol}) han sido actualizados`);
+        // Aquí más adelante se actualizarían los datos en base de datos
     }
 
     override login(): boolean {
-        console.log(`${this.nombre} inició sesión`);
+        console.log(`Empleado ${this.nombreCompleto} (${this.tipoRol}) inició sesión`);
         return true;
     }
-
 }

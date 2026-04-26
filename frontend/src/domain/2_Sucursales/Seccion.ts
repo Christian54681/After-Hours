@@ -1,17 +1,21 @@
+//Seccion
 export class Seccion {
     //atributos
     public idSeccion: number;
     public nombre: string;
     public capacidadMax: number;
+    public mesasIdS: number[];
 
     constructor(
         idSeccion: number,
         nombre: string,
         capacidadMax: number,
+        mesasIds: number[],
     ) {
         this.idSeccion = idSeccion;
         this.nombre = nombre;
         this.capacidadMax = capacidadMax;
+        this.mesasIdS = mesasIds;
     }
 
     //métodos

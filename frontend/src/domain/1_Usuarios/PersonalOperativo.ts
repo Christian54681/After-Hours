@@ -1,33 +1,36 @@
+//PersonalOperativo
 import { Empleado } from "./Empleado";
 
-export class PersonalOperativo extends Empleado{
-    //atributos
-    public areaActual: string
-    
+export class PersonalOperativo extends Empleado {
+
+    // Atributos según el nuevo diagrama
+    public areaActual: string;
+    public activo: boolean;
+
     constructor(
         id: string,
-        nombre: string,
+        nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
-        idEmpleado: string,
         tipoRol: string,
+        idEmpleado: string,
         areaActual: string,
         activo: boolean = true
-    ){
-        super(id, nombre, email, telefono, estado, idEmpleado, tipoRol);
-        this.areaActual = areaActual
+    ) {
+        super(id, nombreCompleto, email, telefono, estado, tipoRol, idEmpleado);
+
+        this.areaActual = areaActual;
+        this.activo = activo;
     }
 
-    //métodos
-    consultarTareas(): any[]{
+    //metodos
+    consultarTareas(): any[] {
         console.log(`${this.getNombre()} está consultando sus tareas en el área: ${this.areaActual}`);
-        return [];
-
+        return []; 
     }
 
-    actualizarEstadoTarea(): void{
-    console.log(`${this.getNombre()} actualizó una tarea`);        
+    actualizarEstadoTarea(idTarea: number): void {
+        console.log(`${this.getNombre()} actualizó la tarea con ID: ${idTarea}`);
     }
-
 }
