@@ -42,7 +42,6 @@ const Landing = () => {
     console.log("Usuario actual:", user);
   }
 
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -212,6 +211,7 @@ const Landing = () => {
                   ? `Bienvenido, ${user.username || user.nombre || 'Usuario'}`
                   : "No hay usuario autenticado"
                 }
+                {user ? `Bienvenido, ${user.username}` : "No hay usuario autenticado"}
               </h3>
               <button onClick={handlePrueba}>Probar Modelo</button>
             </CardContent>

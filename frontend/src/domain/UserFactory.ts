@@ -1,5 +1,6 @@
 // domain/UserFactory.ts
 import { AdminGeneral } from "./1_Usuarios/AdminGeneral";
+//import { Cliente } from "./9_Cliente/Cliente";
 import { AdminSucursal } from "./1_Usuarios/AdminSucursal";
 import { Bartender } from "./1_Usuarios/Bartender";
 import { Cajero } from "./1_Usuarios/Cajero";
@@ -11,12 +12,11 @@ import { Usuario } from "./1_Usuarios/Usuario";
 export class UserFactory {
 
     static crearUsuario(data: any) {
-        // Asegúrate de que createdAt esté disponible en 'data'
         const { tipo, email, username, info, createdAt } = data;
 
         if (!tipo || !info) {
             throw new Error("Datos insuficientes para crear usuario");
-        }
+
 
         // Convertimos a Date real
         const fechaCreacion = createdAt ? new Date(createdAt) : new Date();
@@ -79,4 +79,4 @@ export class UserFactory {
 
         throw new Error(`Tipo de usuario desconocido: ${tipo}`);
     }
-}
+}}

@@ -12,6 +12,7 @@ import Shifts from "./pages/Shifts.tsx";
 import Suppliers from "./pages/Suppliers.tsx";
 import Tables from "./pages/Tables.tsx";
 import EmployeeDashboard from "./pages/EmployeeDashboard.tsx";
+import Sections from "./pages/Sections.tsx";
 import NotFound from "./pages/NotFound.tsx";
 // import Bartenders from "./pages/Bartender.tsx";
 // import Cajeros from "./pages/Cajero.tsx";
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/admin/proveedores" element={<Suppliers />} />
             <Route path="/admin/mesas" element={<Tables />} />
             <Route path="/empleado" element={<EmployeeDashboard />} />
+            <Route path="/admin/secciones" element={<Sections/>} />
             {/* <Route path="/bartenders" element={<Bartenders />} />
           <Route path="/cajeros" element={<Cajeros />} />
           <Route path="/contadores" element={<Contadores />} />
