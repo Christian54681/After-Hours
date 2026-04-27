@@ -42,25 +42,32 @@ import {
 } from "@/data/mockData";
 import { toast } from "sonner";
 
-const emptyForm: { number: string; section: TableSection } = {
-    number: "",
-    section: "barra",
+const STATUS_MAP: Record<number, TableStatus> = {
+    0: "libre",
+    1: "ocupada",
+    2: "apartada",
 };
 
-const emptyReservation = { name: "", time: "" };
+const emptyForm = {
+    number: "",
+    section: "" as TableSection,
+    capacity: "",
+};
+
+const emptyReservation = { name: "", time: "", date: "" };
 
 const statusBadge: Record<TableStatus, { label: string; className: string }> = {
     libre: {
         label: "Libre",
-        className: "bg-muted/40 text-muted-foreground border-border",
+        className: "bg-muted/40 text-muted-foreground border-border mt-1",
     },
     ocupada: {
         label: "Ocupada",
-        className: "bg-primary/15 text-primary border-primary/30",
+        className: "bg-primary/15 text-primary mt-1",
     },
     apartada: {
         label: "Apartada",
-        className: "bg-amber-500/15 text-amber-500 border-amber-500/30",
+        className: "bg-primary/15 text-primary mt-1",
     },
 };
 
@@ -111,28 +118,30 @@ const Tables = () => {
 
     const openEditTable = (t: BarTable) => {
         setEditing(t);
-        setForm({ number: String(t.number), section: t.section });
+        setForm({
+            number: String(t.number),
+            section: t.section,
+            capacity: String(t.capacity || 4)
+        });
         setTableDialogOpen(true);
     };
 
     const saveTable = () => {
         const num = parseInt(form.number, 10);
-        if (!num || num <= 0) {
-            toast.error("El número de mesa debe ser mayor a 0");
-            return;
-        }
-        const duplicate = tables.some(
-            (t) => t.number === num && t.id !== editing?.id,
-        );
-        if (duplicate) {
-            toast.error("Ya existe una mesa con ese número");
-            return;
+        const cap = parseInt(form.capacity, 10);
+
+        if (!num || num <= 0) return toast.error("Número de mesa inválido");
+        if (!cap || cap <= 0) return toast.error("La capacidad debe ser mayor a 0");
+        if (!form.section) return toast.error("Selecciona una sección");
+
+        if (tables.some((t) => t.number === num && t.id !== editing?.id)) {
+            return toast.error("Esa mesa ya existe");
         }
 
         if (editing) {
             setTables((prev) =>
                 prev.map((t) =>
-                    t.id === editing.id ? { ...t, number: num, section: form.section } : t,
+                    t.id === editing.id ? { ...t, number: num, section: form.section, capacity: cap } : t,
                 ),
             );
             toast.success("Mesa actualizada");
@@ -142,14 +151,25 @@ const Tables = () => {
                 {
                     id: Date.now(),
                     number: num,
+                    capacity: cap,
                     section: form.section,
-                    status: "libre",
-                    waiterId: sectionWaiters[form.section] ?? null,
+                    status: STATUS_MAP[0],
+                    waiterId: initialSectionWaiters[form.section] ?? null,
                 },
             ]);
             toast.success("Mesa creada");
         }
         setTableDialogOpen(false);
+    };
+
+    const updateTableStatus = (id: number, statusInt: number, extra = {}) => {
+        setTables((prev) =>
+            prev.map((t) =>
+                t.id === id
+                    ? { ...t, status: STATUS_MAP[statusInt], ...extra }
+                    : t
+            )
+        );
     };
 
     const removeTable = (id: number) => {
@@ -158,12 +178,11 @@ const Tables = () => {
         toast.success("Mesa eliminada");
     };
 
-    // ── Status actions (one state at a time) ─────────────────
     const setOccupied = (t: BarTable) => {
         setTables((prev) =>
             prev.map((x) =>
                 x.id === t.id
-                    ? { ...x, status: "ocupada", reservationName: undefined, reservationTime: undefined }
+                    ? { ...x, status: "ocupada", reservationName: undefined, reservationDate: undefined, reservationTime: undefined }
                     : x,
             ),
         );
@@ -174,19 +193,19 @@ const Tables = () => {
         setTables((prev) =>
             prev.map((x) =>
                 x.id === t.id
-                    ? { ...x, status: "libre", reservationName: undefined, reservationTime: undefined }
+                    ? { ...x, status: "libre", reservationName: undefined, reservationDate: undefined, reservationTime: undefined }
                     : x,
             ),
         );
         toast.success(`Mesa ${t.number} liberada`);
     };
 
-    // ── Reservation ──────────────────────────────────────────
     const openReservation = (t: BarTable) => {
         setReserving(t);
         setReservationForm({
             name: t.reservationName ?? "",
             time: t.reservationTime ?? "",
+            date: t.reservationDate ?? "",
         });
         setReservationDialogOpen(true);
     };
@@ -196,6 +215,10 @@ const Tables = () => {
         const name = reservationForm.name.trim();
         if (!name) {
             toast.error("El nombre del cliente es obligatorio");
+            return;
+        }
+        if (!reservationForm.date) {
+            toast.error("El día de la reservación es obligatorio");
             return;
         }
         if (!reservationForm.time) {
@@ -209,6 +232,7 @@ const Tables = () => {
                         ...x,
                         status: "apartada",
                         reservationName: name,
+                        reservationDate: reservationForm.date,
                         reservationTime: reservationForm.time,
                     }
                     : x,
@@ -218,7 +242,6 @@ const Tables = () => {
         setReservationDialogOpen(false);
     };
 
-    // ── Assign waiter to a single table ──────────────────────
     const openAssignWaiter = (t: BarTable) => {
         setAssigning(t);
         setAssignWaiterId(t.waiterId ? String(t.waiterId) : "none");
@@ -238,16 +261,10 @@ const Tables = () => {
         setAssignDialogOpen(false);
     };
 
-    // ── Assign waiter to a whole section ─────────────────────
-    const setSectionWaiter = (section: TableSection, value: string) => {
-        const waiterId = value && value !== "none" ? parseInt(value, 10) : null;
-        setSectionWaiters((prev) => ({ ...prev, [section]: waiterId }));
-        setTables((prev) =>
-            prev.map((t) => (t.section === section ? { ...t, waiterId } : t)),
-        );
-        toast.success(
-            `Mesero ${waiterId ? "asignado" : "removido"} en ${sectionLabel(section)}`,
-        );
+    const formatDate = (date?: string) => {
+        if (!date) return "—";
+        const [year, month, day] = date.split("-");
+        return `${day}-${month}-${year}`;
     };
 
     return (
@@ -258,55 +275,22 @@ const Tables = () => {
                 <MobileNav />
 
                 <div className="space-y-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl md:text-3xl font-display font-bold text-gradient-gold">
                                 Mesas
                             </h1>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {availableCount} disponible{availableCount === 1 ? "" : "s"} de{" "}
-                                {tables.length}
-                            </p>
                         </div>
                         <Button
                             onClick={openNewTable}
-                            className="gold-glow hover:scale-[1.02] transition-transform shrink-0"
+                            className="gold-glow hover:scale-[1.02] transition-transform"
                         >
-                            <Plus className="w-4 h-4 mr-2" /> Nueva mesa
+                            <Plus className="w-4 h-4 mr-2" /> Agregar Mesa
                         </Button>
                     </div>
 
-                    {/* Section waiter quick assignment */}
-                    <div className="glass-card p-4 grid gap-3 sm:grid-cols-3">
-                        {TABLE_SECTIONS.map((s) => (
-                            <div key={s.key} className="space-y-1.5">
-                                <Label className="text-xs text-muted-foreground">
-                                    Mesero — {s.label}
-                                </Label>
-                                <Select
-                                    value={
-                                        sectionWaiters[s.key] ? String(sectionWaiters[s.key]) : "none"
-                                    }
-                                    onValueChange={(v) => setSectionWaiter(s.key, v)}
-                                >
-                                    <SelectTrigger className="bg-muted/50 border-border">
-                                        <SelectValue placeholder="Sin asignar" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">Sin asignar</SelectItem>
-                                        {employees.map((e) => (
-                                            <SelectItem key={e.id} value={String(e.id)}>
-                                                {e.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        ))}
-                    </div>
-
                     {tables.length === 0 ? (
-                        <div className="glass-card p-10 text-center text-muted-foreground">
+                        <div className="flex justify-center py-20">
                             Aún no hay mesas registradas.
                         </div>
                     ) : (
@@ -315,40 +299,26 @@ const Tables = () => {
                                 const badge = statusBadge[t.status];
                                 const isOpen = expanded === t.id;
                                 return (
-                                    <div
-                                        key={t.id}
-                                        className="glass-card p-5 hover:border-primary/30 transition-colors"
-                                    >
-                                        <div className="flex items-center justify-between gap-3">
-                                            <div className="flex items-center gap-4 min-w-0">
-                                                <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                    <div key={t.id} className="glass-card p-5 hover:border-primary/30 transition-colors">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                                                     <Armchair className="w-5 h-5 text-primary" />
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <h3 className="font-semibold text-foreground truncate">
-                                                            Mesa {t.number}
-                                                        </h3>
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-foreground">Mesa {t.number}</h3>
+                                                    <div className="flex gap-2 items-center">
+                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">{sectionLabel(t.section)}</span>
+
                                                         <Badge className={badge.className}>
                                                             {badge.label}
                                                         </Badge>
-                                                        <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                                                            {sectionLabel(t.section)}
-                                                        </span>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground truncate">
-                                                        {t.status === "apartada" && t.reservationName
-                                                            ? `Apartada · ${t.reservationName} a las ${t.reservationTime}`
-                                                            : `Mesero: ${waiterName(t.waiterId)}`}
-                                                    </p>
                                                 </div>
                                             </div>
                                             <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => setExpanded(isOpen ? null : t.id)}
-                                                className="text-muted-foreground hover:text-primary shrink-0"
-                                            >
+                                                variant="ghost" size="sm" onClick={() => setExpanded(isOpen ? null : t.id)}
+                                                className="text-muted-foreground hover:text-primary">
                                                 {isOpen ? (
                                                     <ChevronUp className="w-4 h-4" />
                                                 ) : (
@@ -360,33 +330,23 @@ const Tables = () => {
 
                                         {isOpen && (
                                             <div className="mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                                                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                    <UserCircle className="w-3.5 h-3.5" />
-                                                    <span className="text-foreground">
-                                                        {waiterName(t.waiterId)}
-                                                    </span>
-                                                </p>
+                                                <p className="text-sm text-muted-foreground">Mesero: <span className="text-foreground">{waiterName(t.waiterId)}</span></p>
+                                                <p className="text-sm text-muted-foreground">Capacidad: <span className="text-foreground">{t.capacity || 4} personas</span></p>
                                                 {t.status === "apartada" && (
                                                     <>
-                                                        <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                            <User className="w-3.5 h-3.5" />
-                                                            <span className="text-foreground">
-                                                                {t.reservationName}
-                                                            </span>
+                                                        <p className="text-sm text-foreground uppercase">Reservación </p>
+                                                        <p className="text-sm text-muted-foreground">- Nombre: <span className="text-foreground">{t.reservationName}</span></p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            - Día: <span className="text-foreground">{formatDate(t.reservationDate)}</span>
                                                         </p>
-                                                        <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                            <Clock className="w-3.5 h-3.5" />
-                                                            <span className="text-foreground">
-                                                                {t.reservationTime}
-                                                            </span>
-                                                        </p>
+                                                        <p className="text-sm text-muted-foreground">- Hora: <span className="text-foreground">{t.reservationTime}</span></p>
                                                     </>
                                                 )}
 
                                                 <div className="flex flex-wrap gap-2 pt-2">
                                                     {t.status !== "ocupada" && (
                                                         <Button
-                                                            variant="secondary"
+                                                            variant="outline"
                                                             size="sm"
                                                             onClick={() => setOccupied(t)}
                                                         >
@@ -408,7 +368,7 @@ const Tables = () => {
                                                             size="sm"
                                                             onClick={() => openReservation(t)}
                                                         >
-                                                            <Clock className="w-3 h-3 mr-1" /> Apartar
+                                                            Apartar
                                                         </Button>
                                                     )}
                                                     {t.status === "apartada" && (
@@ -416,8 +376,7 @@ const Tables = () => {
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={() => openReservation(t)}
-                                                        >
-                                                            <Pencil className="w-3 h-3 mr-1" /> Editar reserva
+                                                        >Editar reserva
                                                         </Button>
                                                     )}
                                                     <Button
@@ -464,49 +423,28 @@ const Tables = () => {
                             Las mesas nuevas se crean como libres y heredan el mesero de la sección.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-2">
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-muted-foreground">Número de mesa</Label>
-                            <Input
-                                type="number"
-                                min={1}
-                                value={form.number}
-                                onChange={(e) => setForm((f) => ({ ...f, number: e.target.value }))}
-                                className="bg-muted/50 border-border"
-                            />
+                            <Label className="text-muted-foreground">Número</Label>
+                            <Input placeholder="Ej: 1" type="number" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} />
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-muted-foreground">Sección</Label>
-                            <Select
-                                value={form.section}
-                                onValueChange={(v) =>
-                                    setForm((f) => ({ ...f, section: v as TableSection }))
-                                }
-                            >
-                                <SelectTrigger className="bg-muted/50 border-border">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {TABLE_SECTIONS.map((s) => (
-                                        <SelectItem key={s.key} value={s.key}>
-                                            {s.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <Label className="text-muted-foreground">Capacidad</Label>
+                            <Input placeholder="Ej: 4" type="number" value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setTableDialogOpen(false)}
-                            className="border-border text-muted-foreground"
-                        >
-                            Cancelar
-                        </Button>
-                        <Button onClick={saveTable} className="gold-glow">
-                            {editing ? "Guardar cambios" : "Agregar"}
-                        </Button>
+                    <div className="space-y-2">
+                        <Label className="text-muted-foreground">Sección</Label>
+                        <Select value={form.section} onValueChange={(v) => setForm({ ...form, section: v as TableSection })}>
+                            <SelectTrigger className="bg-muted/50 border-border"><SelectValue placeholder="Elija una sección" /></SelectTrigger>
+                            <SelectContent className="bg-card border-border">
+                                {TABLE_SECTIONS.map((s) => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <DialogFooter className="mt-2">
+                        <Button variant="outline" onClick={() => setTableDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
+                        <Button onClick={saveTable} className="gold-glow">{editing ? "Guardar Cambios" : "Agregar Mesa"}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -532,6 +470,17 @@ const Tables = () => {
                                 }
                                 placeholder="Ej: Carlos Mendoza"
                                 maxLength={100}
+                                className="bg-muted/50 border-border"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-muted-foreground">Día *</Label>
+                            <Input
+                                type="date"
+                                value={reservationForm.date}
+                                onChange={(e) =>
+                                    setReservationForm((f) => ({ ...f, date: e.target.value }))
+                                }
                                 className="bg-muted/50 border-border"
                             />
                         </div>
