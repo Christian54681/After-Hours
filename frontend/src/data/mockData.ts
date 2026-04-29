@@ -75,6 +75,8 @@ export interface BarTable {
     // Reservation fields — only populated when status === "apartada"
     reservationName?: string;
     reservationTime?: string; // "HH:mm"
+    reservationDate?: string;
+    capacity?: number;
 }
 
 export const TABLE_SECTIONS: { key: TableSection; label: string }[] = [
