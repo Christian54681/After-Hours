@@ -211,7 +211,6 @@ const Landing = () => {
                   ? `Bienvenido, ${user.username || user.nombre || 'Usuario'}`
                   : "No hay usuario autenticado"
                 }
-                {user ? `Bienvenido, ${user.username}` : "No hay usuario autenticado"}
               </h3>
               <button onClick={handlePrueba}>Probar Modelo</button>
             </CardContent>

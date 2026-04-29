@@ -10,23 +10,22 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 // Definimos roles por opción
 const navItems = [
-    { to: "/admin", label: "Sucursales", icon: Building2, roles: ["gerente_general"] },
-    { to: "/admin/empleados", label: "Empleados", icon: Users, roles: ["gerente_general", "gerente_sucursal"] },
-    { to: "/admin/turnos", label: "Turnos", icon: CalendarClock, roles: ["gerente_sucursal"] },
-    { to: "/admin/proveedores", label: "Proveedores", icon: Truck, roles: ["gerente_general"] },
-    { to: "/admin/secciones", label: "Secciones", icon: LayoutGrid, roles: ["gerente_sucursal"] },
-    { to: "/admin/mesas", label: "Mesas", icon: Armchair, roles: ["gerente_sucursal"] },
+    { to: "/admin", label: "Sucursales", icon: Building2, roles: ["AdminGeneral"] },
+    { to: "/admin/empleados", label: "Empleados", icon: Users, roles: ["AdminGeneral", "AdminSucursal"] },
+    { to: "/admin/turnos", label: "Turnos", icon: CalendarClock, roles: ["AdminSucursal"] },
+    { to: "/admin/proveedores", label: "Proveedores", icon: Truck, roles: ["AdminGeneral"] },
+    { to: "/admin/secciones", label: "Secciones", icon: LayoutGrid, roles: ["AdminSucursal"] },
+    { to: "/admin/mesas", label: "Mesas", icon: Armchair, roles: ["AdminSucursal"] },
 ];
 
 export const AdminSidebar = () => {
     const { pathname } = useLocation();
 
-    // Simulación de usuario
-    // const userRole = "gerente_sucursal"; 
-    const userRole = "gerente_general";
+    const { user } = useAuth()
 
     return (
         <aside className="w-64 border-r border-border bg-card/50 flex-col shrink-0 hidden md:flex">
@@ -43,7 +42,7 @@ export const AdminSidebar = () => {
 
             <nav className="flex-1 p-4 space-y-1">
                 {navItems
-                    .filter(item => item.roles.includes(userRole)) // Filtro por rol
+                    .filter(item => item.roles.includes(user.tipoRol)) // Filtro por rol
                     .map(({ to, label, icon: Icon }) => {
                         const active = pathname === to;
 

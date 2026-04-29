@@ -67,14 +67,22 @@ const Login = () => {
         login(data.user, data.token);
 
         toast.success("¡Bienvenido!");
-        // AGREGAR LA PARTE DEL ROL PARA REDIRIGIR A DONDE SEA NECESARIO, AQUI AHORITA SE REDIRIGE DIRECTAMENTE A ADMIN SI ES EMPLEADO
-        // SI NO ES EMPLEADO REDIRIGE A LA LANDING PAGE
-        navigate(data.user.tipo === "empleado" ? "/admin" : "/");
+        // Redirige según el rol del usuario
+        console.log("Usuario logueado:", data.user);
+        const userRole = data.user.info.tipoRol;
+        if (userRole === "AdminSucursal" || userRole === "AdminGeneral") {
+          navigate("/admin");
+        } else if (data.user.tipo === "empleado") {
+          navigate("/empleado");
+        } else {
+          navigate("/");
+        }
       } else {
         toast.error(data.error);
       }
     } catch (error) {
       toast.error("Error de conexión");
+      console.log("Error en el login:", error);
     }
   };
 

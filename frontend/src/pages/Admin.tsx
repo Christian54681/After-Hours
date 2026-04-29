@@ -311,9 +311,9 @@ const Admin = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-muted-foreground">Categoría</Label>
+              <Label className="text-muted-foreground">Tipo de Bar</Label>
               <Select value={form.tipoBar} onValueChange={(val) => setForm((f) => ({ ...f, tipoBar: val }))}>
-                <SelectTrigger className="bg-muted/50 border-border"><SelectValue placeholder="Seleccione una categoría"/></SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-border"><SelectValue placeholder="Seleccione Tipo de Bar"/></SelectTrigger>
                 <SelectContent className="bg-card border-border">
                   {categories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                 </SelectContent>
