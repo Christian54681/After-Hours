@@ -37,7 +37,7 @@ async function seed() {
                     nombreCompleto: "Christian Admin",
                     telefono: "555-9876",
                     tipoRol: "AdminGeneral",
-                    estado: "Activo",
+                    estado: "Inactivo",
 
                     // Atributos de clase ADMIN SUCURSAL (Hija)
                     idGlobal: 1,

@@ -64,6 +64,7 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        //console.log("datos q llegan:", data.user); 
         login(data.user, data.token);
 
         toast.success("¡Bienvenido!");
@@ -74,6 +75,7 @@ const Login = () => {
         toast.error(data.error);
       }
     } catch (error) {
+      //console.error("error:", error); 
       toast.error("Error de conexión");
     }
   };

@@ -7,31 +7,36 @@ import { Contador } from "./1_Usuarios/Contador";
 import { Mesero } from "./1_Usuarios/Mesero";
 import { PersonalOperativo } from "./1_Usuarios/PersonalOperativo";
 import { Usuario } from "./1_Usuarios/Usuario";
-//import { Empleado } from "./1_Usuarios/Empleado";
-
+import { Empleado } from "./1_Usuarios/Empleado";
 
 export class UserFactory {
     static crearUsuario(data: any) {
-        const { tipo, email, username, info, createdAt } = data;
-        if (!tipo || !info) {
-            throw new Error("Datos insuficientes para crear usuario");
+        const { tipo, email, username, info, createdAt , password} = data;
+        
+        if (!tipo) {
+            throw new Error("Datos insuficientes: falta el tipo de usuario");
         }
+        
         const fechaCreacion = createdAt ? new Date(createdAt) : new Date();
 
-        //caso base de usuario
+        const datosInfo = info || {};
+
+        //caso base: usuario o clienet
         if (tipo === "Usuario" || tipo === "usuario" || tipo === "Cliente" || tipo === "cliente") {
             return new Usuario(
-                info.nombreCompleto || info.nombre || "Usuario Anónimo",
+                datosInfo.nombreCompleto || datosInfo.nombre || username || "Usuario Anónimo",
                 email,
-                info.telefono || "",
-                info.estado || 'activo',
+                datosInfo.telefono || "",
+                datosInfo.estado || 'activo'
                 //fechaCreacion
             );
-
         }
 
-        // Caso Empleado
         if (tipo === "Empleado" || tipo === "empleado") {
+            if (!info) {
+                throw new Error("Datos insuficientes: los empleados requieren información adicional (info)");
+            }
+
             const rol = info.tipoRol || "";
             switch (rol) {
                 case "Mesero":
@@ -60,7 +65,6 @@ export class UserFactory {
                         info.activo ?? true,
                         info.especialidad || "General",
                         info.barraAsignada || "Barra Principal"
-
                     );
 
                 case "Contador":
@@ -103,8 +107,6 @@ export class UserFactory {
                         info.presupuestoSucursal || 0
                     );
 
-
-
                 case "AdminGeneral":
                     return new AdminGeneral(
                         info.nombreCompleto,
@@ -133,7 +135,5 @@ export class UserFactory {
             }
         }
         throw new Error(`Tipo de usuario desconocido: ${tipo}`);
-
     }
-
 }
