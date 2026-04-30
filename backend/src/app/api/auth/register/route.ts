@@ -33,11 +33,10 @@ export async function POST(req: Request) {
             password: hashedPassword,
             tipo: "Cliente", // Forzamos tipo cliente
             createdAt: new Date(),
-            // todo esto es opcional pero es para mantener consistencia
+            // todo esto es opcional pero
             clienteInfo: {
                 puntosLealtad: 0,
                 telefono: "",
-                preferencias: []
             }
         };
 

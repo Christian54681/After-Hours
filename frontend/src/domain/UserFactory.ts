@@ -8,6 +8,7 @@ import { Mesero } from "./1_Usuarios/Mesero";
 import { PersonalOperativo } from "./1_Usuarios/PersonalOperativo";
 import { Usuario } from "./1_Usuarios/Usuario";
 import { Empleado } from "./1_Usuarios/Empleado";
+import { Cliente } from "./9_Cliente/Cliente";
 
 export class UserFactory {
     static crearUsuario(data: any) {
@@ -22,13 +23,13 @@ export class UserFactory {
         const datosInfo = info || {};
 
         //caso base: usuario o clienet
-        if (tipo === "Usuario" || tipo === "usuario" || tipo === "Cliente" || tipo === "cliente") {
-            return new Usuario(
-                datosInfo.nombreCompleto || datosInfo.nombre || username || "Usuario Anónimo",
+        if (tipo === "Cliente" || tipo === "cliente") {
+            return new Cliente(
+                data.idCliente || 0,
+                username || email.split('@')[0],
                 email,
-                datosInfo.telefono || "",
-                datosInfo.estado || 'activo'
-                //fechaCreacion
+                createdAt,
+                info || []
             );
         }
 

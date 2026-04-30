@@ -50,7 +50,7 @@ export async function POST(req: Request) {
                 email: usuario.email,
                 username: usuario.username,
                 tipo: usuario.tipo,
-                info: usuario.tipo === 'empleado' ? usuario.empleadoInfo : null
+                info: usuario.tipo === 'empleado' ? usuario.empleadoInfo : usuario.tipo === "Cliente" || usuario.tipo === "cliente" ? usuario.clienteInfo : null
             }
         });
 

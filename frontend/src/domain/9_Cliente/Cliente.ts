@@ -4,8 +4,7 @@ export class Cliente {
     public idCliente: number;
     public username: string;
     public email: string;
-    public password: string;
-    public createdAt: number;
+    public createdAt: Date;
     public clienteInfo: number[];
 
 
@@ -13,14 +12,12 @@ export class Cliente {
         idCliente: number,
         username: string,
         email: string,
-        password: string,
-        createdAt: number,
+        createdAt: Date,
         clienteInfo: number[],
     ) {
         this.idCliente = idCliente;
         this.username = username;
-        this.email = email;      
-        this.password = password;
+        this.email = email;
         this.createdAt = createdAt;
         this.clienteInfo = clienteInfo;
     }
