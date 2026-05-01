@@ -6,8 +6,6 @@ import { Cajero } from "./1_Usuarios/Cajero";
 import { Contador } from "./1_Usuarios/Contador";
 import { Mesero } from "./1_Usuarios/Mesero";
 import { PersonalOperativo } from "./1_Usuarios/PersonalOperativo";
-import { Usuario } from "./1_Usuarios/Usuario";
-import { Empleado } from "./1_Usuarios/Empleado";
 import { Cliente } from "./9_Cliente/Cliente";
 
 export class UserFactory {
@@ -17,10 +15,6 @@ export class UserFactory {
         if (!tipo) {
             throw new Error("Datos insuficientes: falta el tipo de usuario");
         }
-        
-        const fechaCreacion = createdAt ? new Date(createdAt) : new Date();
-
-        const datosInfo = info || {};
 
         //caso base: usuario o clienet
         if (tipo === "Cliente" || tipo === "cliente") {

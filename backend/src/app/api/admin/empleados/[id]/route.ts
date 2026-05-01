@@ -74,7 +74,7 @@ export async function PUT(req: Request, { params }: { params: any }) {
 
         // Ejecutar la actualización
         const result = await db.collection("users").updateOne(
-            { _id: new ObjectId(id), tipo: "empleado" }, 
+            { _id: new ObjectId(id), tipo: "empleado" },
             { $set: updateData }
         );
 
