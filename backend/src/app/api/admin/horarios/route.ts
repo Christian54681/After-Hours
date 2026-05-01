@@ -13,15 +13,14 @@ export async function POST(req: Request) {
         const db = client.db("after_hours");
         const body = await req.json();
 
-        // Ahora recibimos 'dias' (array) en lugar de o además de 'fecha'
         const { empleadoId, sucursalId, entrada, salida, dias, rolEnTurno } = body;
 
-        // 1. Validaciones básicas actualizadas
+        // Validaciones básicas actualizadas
         if (!empleadoId || !entrada || !salida || !dias || !Array.isArray(dias)) {
             return NextResponse.json({ error: "Datos incompletos o días no seleccionados" }, { status: 400 });
         }
 
-        // 2. Verificar traslapes (Conflict Check)
+        // Verificar traslapes (Conflict Check)
         // Buscamos turnos del mismo empleado que compartan al menos UN DÍA de la semana
         const turnosExistentes = await db.collection("schedules").find({
             empleadoId: new ObjectId(empleadoId),
@@ -30,12 +29,12 @@ export async function POST(req: Request) {
 
         const nuevoInicio = toMin(entrada);
         let nuevoFin = toMin(salida);
-        if (nuevoFin <= nuevoInicio) nuevoFin += 1440; 
+        if (nuevoFin <= nuevoInicio) nuevoFin += 1440;
 
         for (const turno of turnosExistentes) {
             // Solo comparamos si el turno existente comparte días específicos con el nuevo
             const diasComunes = turno.dias.filter((d: string) => dias.includes(d));
-            
+
             if (diasComunes.length > 0) {
                 const exInicio = toMin(turno.entrada);
                 let exFin = toMin(turno.salida);
@@ -50,7 +49,7 @@ export async function POST(req: Request) {
             }
         }
 
-        // 3. Insertar el nuevo turno con formato de días
+        // Insertar el nuevo turno con formato de días
         const nuevoTurno = {
             empleadoId: new ObjectId(empleadoId),
             sucursalId: new ObjectId(sucursalId),
@@ -83,7 +82,7 @@ export async function GET(req: Request) {
 
         // Traemos todos los horarios (puedes filtrar por empleadoId también si quieres)
         const data = await db.collection("schedules").find(query).toArray();
-        
+
         return NextResponse.json(data);
     } catch (error) {
         return NextResponse.json({ error: "Error al obtener horarios" }, { status: 500 });

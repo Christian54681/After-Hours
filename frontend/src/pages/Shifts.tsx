@@ -53,6 +53,7 @@ const Shifts = () => {
     const [editing, setEditing] = useState<Shift | null>(null);
     const [form, setForm] = useState(emptyForm);
     const [error, setError] = useState<string | null>(null);
+    const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
     const { user } = useAuth();
 
@@ -108,6 +109,11 @@ const Shifts = () => {
     const branchName = (id: string) => {
         const b = branches.find(b => b.idSucursal === id);
         return b?.nombre || "Cargando...";
+    };
+
+    const employeeRole = (id: string) => {
+        const emp = employees.find((e) => e._id === id);
+        return emp?.empleadoInfo?.tipoRol || emp?.tipoRol || "Personal";
     };
 
     const accentFor = (id: string) => {
@@ -227,7 +233,6 @@ const Shifts = () => {
     };
 
     const remove = async (id: string) => {
-        if (!confirm("¿Eliminar este turno?")) return;
         try {
             const res = await fetch(`${urlbase}/admin/horarios/${id}`, {
                 method: 'DELETE',
@@ -321,6 +326,9 @@ const Shifts = () => {
                                                     >
                                                         <div className={`text-[10px] font-bold ${accent.text} truncate`}>
                                                             {employeeName(seg.shift.empleadoId)}
+                                                            <span className="opacity-70 font-normal ml-1">
+                                                                • {employeeRole(seg.shift.empleadoId)}
+                                                            </span>
                                                         </div>
                                                         <div className="text-[8px] opacity-60">
                                                             {seg.shift.entrada}-{seg.shift.salida}
@@ -348,7 +356,7 @@ const Shifts = () => {
                                 <SelectContent>
                                     {filteredEmployees.map(e => (
                                         <SelectItem key={e._id} value={e._id}>
-                                            {e.nombreCompleto || e.empleadoInfo?.nombreCompleto}
+                                            {e.nombreCompleto || e.empleadoInfo?.nombreCompleto} - <span className="opacity-70 font-normal">{e.empleadoInfo?.tipoRol} </span>
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -412,9 +420,38 @@ const Shifts = () => {
                     </div>
                     <DialogFooter className="gap-2 sm:gap-0">
                         {editing && (
-                            <Button variant="ghost" className="text-destructive hover:bg-destructive/10" onClick={() => remove(editing._id!)}>
-                                <Trash2 className="w-4 h-4 mr-2" /> Eliminar
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                {!isConfirmingDelete ? (
+                                    // BOTÓN INICIAL
+                                    <Button
+                                        variant="ghost"
+                                        className="text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-all"
+                                        onClick={() => setIsConfirmingDelete(true)}
+                                    >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Eliminar
+                                    </Button>
+                                ) : (
+                                    // BOTÓN DE CONFIRMACIÓN REAL
+                                    <div className="flex items-center gap-1 animate-in fade-in slide-in-from-right-2 duration-300">
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => remove(editing._id!)}
+                                            className="shadow-lg shadow-destructive/20"
+                                        >
+                                            Confirmar
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setIsConfirmingDelete(false)}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
                         )}
                         <Button onClick={save} className="bg-primary hover:bg-primary/90">
                             {editing ? "Actualizar Turno" : "Crear Turno Semanal"}
