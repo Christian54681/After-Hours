@@ -11,29 +11,41 @@ export async function POST(req: Request) {
         if (!token) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
         await jwtVerify(token, JWT_SECRET);
 
-        const { idSucursal, nombreSeccion, idSeccionManual } = await req.json();
+        const { idSucursal, nombreSeccion, idSeccionManual, capacidadMax } = await req.json();
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // 1. Insertar la sección
-        const seccionResult = await db.collection("sections").insertOne({
+        // Crear el objeto de la sección
+        const nuevaSeccion = {
             idSeccion: idSeccionManual,
             nombre: nombreSeccion,
-            idMesas: [] // Inicia sin mesas
-        });
+            capacidadMax: Number(capacidadMax) || 0,
+            mesasIds: [],
+            mesasCompletas: []
+        };
 
-        // 2. Vincularla a la sucursal mediante el idSucursal
+        // Insertar en la colección de secciones (opcional, pero buena práctica)
+        const seccionResult = await db.collection("sections").insertOne(nuevaSeccion);
+
+        // Agregamos el objeto completo al array 'secciones' de la sucursal
         const updateResult = await db.collection("branches").updateOne(
             { idSucursal: idSucursal },
-            { $push: { idSecciones: seccionResult.insertedId } as any }
+            {
+                $push: {
+                    secciones: {
+                        _id: seccionResult.insertedId,
+                        ...nuevaSeccion
+                    }
+                } as any
+            }
         );
 
         if (updateResult.matchedCount === 0) {
-            return NextResponse.json({ error: "Sucursal no encontrada" }, { status: 404 });
+            return NextResponse.json({ error: "Sucursal no encontrada para vincular" }, { status: 404 });
         }
 
         return NextResponse.json({ success: true, idSeccionDB: seccionResult.insertedId });
     } catch (error) {
-        return NextResponse.json({ error: "Error al crear sección" }, { status: 500 });
+        return NextResponse.json({ error: "Error al crear y vincular sección" }, { status: 500 });
     }
 }

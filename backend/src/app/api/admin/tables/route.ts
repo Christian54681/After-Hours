@@ -34,3 +34,22 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Error al crear mesa" }, { status: 500 });
     }
 }
+
+export async function GET(req: Request) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const estado = searchParams.get('estado');
+
+        const client = await clientPromise;
+        const db = client.db("after_hours");
+
+        let query: any = {};
+        if (estado) query.estado = parseInt(estado);
+
+        const tables = await db.collection("tables").find(query).toArray();
+
+        return NextResponse.json(tables);
+    } catch (error) {
+        return NextResponse.json({ error: "Error al obtener mesas" }, { status: 500 });
+    }
+}
