@@ -10,16 +10,13 @@ import { Cliente } from "./9_Cliente/Cliente";
 
 export class UserFactory {
     static crearUsuario(data: any) {
-        const { tipo, email, username, info, createdAt , password} = data;
-        
-        if (!tipo) {
-            throw new Error("Datos insuficientes: falta el tipo de usuario");
-        }
+        const { tipo, email, username, info, createdAt, password } = data;
 
-        //caso base: usuario o clienet
+        if (!tipo) throw new Error("Falta el tipo de usuario");
+
         if (tipo === "Cliente" || tipo === "cliente") {
             return new Cliente(
-                data.idCliente || 0,
+                data.idCliente || data.id || 0, // Fallback de ID
                 username || email.split('@')[0],
                 email,
                 createdAt,
@@ -28,25 +25,29 @@ export class UserFactory {
         }
 
         if (tipo === "Empleado" || tipo === "empleado") {
-            if (!info) {
-                throw new Error("Datos insuficientes: los empleados requieren información adicional (info)");
-            }
+            if (!info) throw new Error("Falta info del empleado");
 
             const rol = info.tipoRol || "";
+            const idFinal = (info.idEmpleado || data.id || data._id || "S/N").toString();
+            const fechaContrato = data.createdAt ? new Date(data.createdAt) : new Date();
+
             switch (rol) {
                 case "Mesero":
-                    return new Mesero(
+                    const mesero = new Mesero(
                         info.nombreCompleto,
                         email,
                         info.telefono || "",
-                        info.estado || 'activo',
-                        info.tipoRol,
-                        info.idEmpleado?.toString(),
-                        info.areaActual || "Sin asignar",
+                        info.estado || 'Activo',
+                        info.tipoRol || 'Mesero',
+                        idFinal,
+                        info.areaActual || "Piso",
                         info.activo ?? true,
                         info.zonaAsignada || "Sin zona",
-                        info.mesasACargo || 0
+                        info.mesasACargo || 0,
+                        fechaContrato,
                     );
+                    (mesero as any).username = username || email.split('@')[0];
+                    return mesero;
 
                 case "Bartender":
                     return new Bartender(
@@ -55,7 +56,7 @@ export class UserFactory {
                         info.telefono || "",
                         info.estado || 'activo',
                         info.tipoRol,
-                        info.idEmpleado?.toString(),
+                        idFinal,
                         info.areaActual || "Bar",
                         info.activo ?? true,
                         info.especialidad || "General",

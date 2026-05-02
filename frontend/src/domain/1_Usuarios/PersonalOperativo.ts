@@ -1,9 +1,7 @@
-//PersonalOperativo
+// domain/1_Usuarios/PersonalOperativo.ts
 import { Empleado } from "./Empleado";
 
 export class PersonalOperativo extends Empleado {
-
-    // Atributos según el nuevo diagrama
     public areaActual: string;
     public activo: boolean;
 
@@ -16,9 +14,11 @@ export class PersonalOperativo extends Empleado {
         idEmpleado: string,
         areaActual: string,
         activo: boolean = true,
-        createdAt?: Date
+        createdAt?: Date,
+        username?: string,
     ) {
-        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, undefined, undefined, createdAt);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, username, createdAt);
+        
         this.areaActual = areaActual;
         this.activo = activo;
     }

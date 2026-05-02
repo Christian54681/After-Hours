@@ -17,9 +17,9 @@ import NotFound from "./pages/NotFound.tsx";
 // import Bartenders from "./pages/Bartender.tsx";
 // import Cajeros from "./pages/Cajero.tsx";
 // import Contadores from "./pages/Contador.tsx";
-// import Meseros from "./pages/Mesero.tsx";
 // import PersonalOperativo from "./pages/PersonalOperativo.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
+import Meseros from "./pages/Mesero.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +40,7 @@ const App = () => (
             <Route path="/admin/proveedores" element={<Suppliers />} />
             <Route path="/admin/mesas" element={<Tables />} />
             <Route path="/empleado" element={<EmployeeDashboard />} />
+            <Route path="/empleado/mesero" element={<Meseros />} />
             <Route path="/admin/secciones" element={<Sections/>} />
             {/* <Route path="/bartenders" element={<Bartenders />} />
           <Route path="/cajeros" element={<Cajeros />} />

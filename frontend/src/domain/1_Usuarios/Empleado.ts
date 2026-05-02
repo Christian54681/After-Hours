@@ -15,10 +15,9 @@ export class Empleado extends Usuario {
         tipoRol: string,
         idEmpleado: string,
         username?: string,
-        password?: string,
         createdAt?: Date,
     ) {
-        super(nombreCompleto, email, telefono, estado, username, password, createdAt);
+        super(nombreCompleto, email, telefono, estado, username, createdAt);
         this.idEmpleado = idEmpleado;
         this.tipoRol = tipoRol;
     }

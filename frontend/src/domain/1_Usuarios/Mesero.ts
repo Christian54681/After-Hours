@@ -2,28 +2,24 @@
 import { PersonalOperativo } from "./PersonalOperativo";
 
 export class Mesero extends PersonalOperativo {
-    // Atributos
     public zonaAsignada: string;
     public mesasACargo: number;
-
-
 
     constructor(
         nombreCompleto: string,
         email: string,
         telefono: string,
         estado: string = 'activo',
-        tipoRol: string = 'Mesero', // Por defecto ya sabemos que es Mesero
+        tipoRol: string = 'Mesero',
         idEmpleado: string,
         areaActual: string,
         activo: boolean = true,
         zonaAsignada: string,
         mesasACargo: number = 0,
-        createdAt?: Date
-
+        createdAt?: Date,
+        username?: string
     ) {
-        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, undefined, undefined, createdAt);
-
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo, createdAt, username);
 
         this.zonaAsignada = zonaAsignada;
         this.mesasACargo = mesasACargo;

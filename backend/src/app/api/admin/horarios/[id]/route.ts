@@ -7,6 +7,44 @@ const toMin = (time: string) => {
     return h * 60 + m;
 };
 
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+    try {
+        // En Next.js 15+ params es una Promise, si usas versiones anteriores quita el await
+        const { id } = await params;
+
+        const client = await clientPromise;
+        const db = client.db("after_hours");
+
+        // Construimos el array de condiciones de forma segura
+        const orConditions: any[] = [{ empleadoId: id }];
+
+        // Solo intentamos crear el ObjectId si el string es válido (24 caracteres hex)
+        if (ObjectId.isValid(id)) {
+            orConditions.push({ empleadoId: new ObjectId(id) });
+        }
+
+        // CORRECCIÓN: Pasamos el query directo, sin envolverlo en {} de nuevo
+        const horarios = await db.collection("schedules").find({
+            $or: orConditions
+        }).toArray();;
+
+        if (!horarios || horarios.length === 0) {
+            return NextResponse.json(
+                { message: "Horario no encontrado para este empleado" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(horarios);
+    } catch (error) {
+        console.error("Error al obtener horario:", error);
+        return NextResponse.json(
+            { error: "Error interno del servidor", details: error instanceof Error ? error.message : String(error) },
+            { status: 500 }
+        );
+    }
+}
+
 // ACTUALIZAR (PUT)
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     try {

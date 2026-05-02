@@ -7,7 +7,6 @@ export class Usuario {
     public telefono: string;
     public estado: string;
     public username: string;
-    public password: string;
     public createdAt: Date;
 
     constructor(
@@ -16,7 +15,6 @@ export class Usuario {
         telefono: string,
         estado: string = 'activo',
         username?: string,
-        password?: string,
         createdAt?: Date
     ) {
         this.nombreCompleto = nombreCompleto;
@@ -24,7 +22,6 @@ export class Usuario {
         this.telefono = telefono;
         this.estado = estado;
         this.username = username || email.split('@')[0];
-        this.password = password || "";
         this.createdAt = createdAt || new Date();
     }
 

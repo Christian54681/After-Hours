@@ -47,10 +47,12 @@ export async function POST(req: Request) {
             success: true,
             token,
             user: {
+                id: usuario._id,
                 email: usuario.email,
                 username: usuario.username,
                 tipo: usuario.tipo,
-                info: usuario.tipo === 'empleado' ? usuario.empleadoInfo : usuario.tipo === "Cliente" || usuario.tipo === "cliente" ? usuario.clienteInfo : null
+                createdAt: usuario.createdAt,
+                info: usuario.tipo === 'empleado' ? { ...usuario.empleadoInfo, idEmpleado: usuario._id } : usuario.tipo === "Cliente" || usuario.tipo === "cliente" ? { ...usuario.clienteInfo } : null
             }
         });
 
