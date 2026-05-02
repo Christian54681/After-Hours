@@ -12,25 +12,45 @@ export async function POST(req: Request) {
         if (!token) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
         await jwtVerify(token, JWT_SECRET);
 
-        const { idSeccionDB, numeroMesa, capacidad } = await req.json();
+        const { idSeccionDB, numeroMesa, capacidad, idSucursal } = await req.json();
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // 1. Crear la mesa
-        const mesaResult = await db.collection("tables").insertOne({
-            numeroMesa,
-            capacidad,
-            estado: 1 // 1 = Libre
-        });
+        // Crear la mesa en la colección global
+        const nuevaMesa = {
+            numeroMesa: Number(numeroMesa),
+            capacidad: Number(capacidad),
+            estado: 1
+        };
+        const mesaResult = await db.collection("tables").insertOne(nuevaMesa);
+        const mesaId = mesaResult.insertedId;
 
-        // 2. Vincular la mesa a la sección usando el _id (ObjectId)
+        // Vincular a la colección 'sections'
         await db.collection("sections").updateOne(
             { _id: new ObjectId(idSeccionDB as string) },
-            { $push: { idMesas: mesaResult.insertedId } as any}
+            { $push: { idMesas: mesaId } as any }
         );
 
-        return NextResponse.json({ success: true, idMesaDB: mesaResult.insertedId });
+        // Meter la mesa en el array embebido de la sucursal
+        // Buscamos la sucursal y la sección específica dentro de su array 'secciones'
+        await db.collection("branches").updateOne(
+            {
+                idSucursal: idSucursal,
+                "secciones._id": new ObjectId(idSeccionDB as string)
+            },
+            {
+                $push: {
+                    "secciones.$.mesasCompletas": {
+                        _id: mesaId,
+                        ...nuevaMesa
+                    }
+                } as any
+            }
+        );
+
+        return NextResponse.json({ success: true, idMesaDB: mesaId });
     } catch (error) {
+        console.error(error);
         return NextResponse.json({ error: "Error al crear mesa" }, { status: 500 });
     }
 }

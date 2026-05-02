@@ -50,7 +50,7 @@ const Sections = () => {
         capacidadMax: 0,
     });
 
-    // 1. Carga de datos reales
+    // Carga de datos reales
     const fetchData = async () => {
         if (!user?.idSucursalACargo) return;
         setLoading(true);
@@ -90,7 +90,7 @@ const Sections = () => {
         setDialogOpen(true);
     };
 
-    // 2. Guardar (POST / PUT)
+    // Guardar (POST / PUT)
     const save = async () => {
         if (!form.idSeccion || !form.nombre) {
             toast.error("Faltan campos obligatorios");
@@ -130,10 +130,8 @@ const Sections = () => {
         }
     };
 
-    // 3. Eliminar (DELETE)
+    // Eliminar (DELETE)
     const deleteSection = async (id: string) => {
-        if (!confirm("¿Eliminar esta sección? Las mesas vinculadas podrían quedar huérfanas.")) return;
-
         try {
             const res = await fetch(`${urlbase}/admin/sections/${id}`, {
                 method: 'DELETE',
