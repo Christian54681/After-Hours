@@ -116,12 +116,12 @@ const Admin = () => {
         body: JSON.stringify(form),
       });
       if (response.ok) {
-        toast.success(editing ? "Sucursal actualizada" : "Sucursal creada");
+        toast.success(editing ? "Sucursal Actualizada" : "Sucursal Creada");
         setDialogOpen(false);
         fetchData();
       }
     } catch (error) {
-      toast.error("Error de conexión");
+      toast.error("Error al guardar");
     }
   };
 
@@ -160,7 +160,7 @@ const Admin = () => {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl md:text-3xl font-display font-bold text-gradient-gold">Sucursales</h1>
             <Button onClick={openNew} className="gold-glow hover:scale-[1.02] transition-transform">
-              <Plus className="w-4 h-4 mr-2" /> Nueva Sucursal
+              <Plus className="w-4 h-4 mr-2" /> Agregar Sucursal
             </Button>
           </div>
 
@@ -191,23 +191,14 @@ const Admin = () => {
                   </div>
 
                   {expandedBranch === b._id && (
-                    <div className="mt-3 pt-3 border-t border-border space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-primary/70" /> {b.direccion || "Sin dirección"}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <UserCircle className="w-4 h-4 text-primary/70" /> Gerente Sucursal: <span className="text-primary">{b.encargado || "No asignado"}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Martini className="w-4 h-4 text-primary/70" /> {b.tipoBar || "Sin tipo de bar"}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="mb-1 mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <p className="text-sm text-muted-foreground mt-2 ml-3">Dirección: <span className="text-foreground">{b.direccion || "Sin dirección"}</span></p>
+                      <p className="text-sm text-muted-foreground ml-3">Gerente Sucursal: <span className="text-foreground">{b.encargado || "No asigando"}</span></p>
+                      <p className="text-sm text-muted-foreground ml-3">Tipo de Bar: <span className="text-foreground">{b.tipoBar || "Sin tipo de bar"}</span></p>
+
 
                       {/* Botones de Acción */}
-                      <div className="flex gap-2 pt-2">
+                      <div className="flex gap-2 pt-2 ml-2">
                         {/* BOTÓN ASIGNAR GERENTE (NUEVO) */}
                         <Button variant="secondary" size="sm" onClick={() => openAssignManager(b)}
                         >
@@ -224,9 +215,9 @@ const Admin = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <h4 className="text-sm font-bold text-foreground/80 flex items-center gap-2">
+                        <p className="text-sm text-foreground flex items-center gap-2 mt-5">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary" /> Secciones y Mesas
-                        </h4>
+                        </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {b.secciones?.map((sec: any) => (
                             <div key={sec._id} className="bg-muted/30 p-3 rounded-lg border border-border/50">
@@ -288,7 +279,7 @@ const Admin = () => {
           </div>
           <DialogFooter className="mt-5">
             <Button variant="outline" onClick={() => setManagerDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
-            <Button onClick={handleUpdateManager} className="gold-glow">Actualizar Gerente</Button>
+            <Button onClick={handleUpdateManager} className="gold-glow">Asignar Gerente</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -297,7 +288,7 @@ const Admin = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-foreground font-display">{editing ? "Editar Sucursal" : "Nueva Sucursal"}</DialogTitle>
+            <DialogTitle className="text-foreground font-display">{editing ? "Editar Sucursal" : "Agregar Sucursal"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
@@ -313,7 +304,7 @@ const Admin = () => {
             <div className="space-y-2">
               <Label className="text-muted-foreground">Tipo de Bar</Label>
               <Select value={form.tipoBar} onValueChange={(val) => setForm((f) => ({ ...f, tipoBar: val }))}>
-                <SelectTrigger className="bg-muted/50 border-border"><SelectValue placeholder="Seleccione Tipo de Bar"/></SelectTrigger>
+                <SelectTrigger className="bg-muted/50 border-border"><SelectValue placeholder="Seleccione Tipo de Bar" /></SelectTrigger>
                 <SelectContent className="bg-card border-border">
                   {categories.map((cat) => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                 </SelectContent>
@@ -324,9 +315,9 @@ const Admin = () => {
               <Input placeholder="Ej: Av. Insurgentes Sur #123, CDMX" value={form.direccion} onChange={(e) => setForm((f) => ({ ...f, direccion: e.target.value }))} className="bg-muted/50 border-border" />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
-            <Button onClick={save} className="gold-glow">{editing ? "Guardar Cambios" : "Crear Sucursal"}</Button>
+            <Button onClick={save} className="gold-glow">{editing ? "Guardar Cambios" : "Agregar Sucursal"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

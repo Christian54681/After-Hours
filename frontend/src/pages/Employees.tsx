@@ -215,7 +215,7 @@ const Employees = () => {
             });
 
             if (res.ok) {
-                toast.success(editing ? "Actualizado con éxito" : "Empleado creado");
+                toast.success(editing ? "Empleado Actualizado" : "Empleado Creado");
                 setDialogOpen(false);
                 fetchData();
             } else {
@@ -323,7 +323,7 @@ const Employees = () => {
                                 </SelectContent>
                             </Select>
                             <Button onClick={openNew} className="gold-glow hover:scale-[1.02] transition-transform shrink-0">
-                                <Plus className="w-4 h-4 mr-2" /> Agregar
+                                <Plus className="w-4 h-4 mr-2" /> Agregar Empleado
                             </Button>
                         </div>
                     </div>
@@ -340,11 +340,10 @@ const Employees = () => {
                                                 <UserCircle className="w-5 h-5 text-primary" />
                                             </div>
                                             <div>
-                                                <h3 className="font-semibold text-foreground">{e.empleadoInfo.nombreCompleto}</h3>
-                                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                    <span className="text-primary/80 uppercase font-bold">{e.empleadoInfo.tipoRol}</span>
-                                                    <span className="text-border">•</span>
-                                                    <span>{branches.find(b => b.idSucursal === e.empleadoInfo.idSucursal)?.nombre || 'Sin Sucursal'}</span>
+                                                <h3 className="text-lg font-semibold text-foreground">{e.empleadoInfo.nombreCompleto}</h3>
+                                                <div className="flex gap-2 items-center">
+                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">{e.empleadoInfo.tipoRol}</span>
+                                                    <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full mt-1">{branches.find(b => b.idSucursal === e.empleadoInfo.idSucursal)?.nombre || 'Sin Sucursal'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -356,11 +355,11 @@ const Employees = () => {
                                     </div>
 
                                     {expanded === e._id && (
-                                        <div className="mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                                            <p className="text-sm text-muted-foreground">Email: <span className="text-foreground">{e.email}</span></p>
-                                            <p className="text-sm text-muted-foreground">ID Usuario: <span className="text-foreground">{e.username}</span></p>
-                                            <p className="text-sm text-muted-foreground">Teléfono: <span className="text-foreground">{e.empleadoInfo.telefono || "No registrado"}</span></p>
-                                            <div className="flex gap-2 pt-2">
+                                        <div className="mb-1 mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <p className="text-sm text-muted-foreground mt-2 ml-3">Email: <span className="text-foreground">{e.email}</span></p>
+                                            <p className="text-sm text-muted-foreground ml-3">ID Usuario: <span className="text-foreground">{e.username}</span></p>
+                                            <p className="text-sm text-muted-foreground ml-3">Teléfono: <span className="text-foreground">{e.empleadoInfo.telefono || "No registrado"}</span></p>
+                                            <div className="flex gap-2 pt-2 ml-2">
                                                 <Button variant="secondary" size="sm" onClick={() => openEdit(e)}>
                                                     <Pencil className="w-3 h-3 mr-1" /> Editar
                                                 </Button>
@@ -383,7 +382,7 @@ const Employees = () => {
                     <DialogHeader>
                         <DialogTitle className="text-foreground font-display">{editing ? "Editar Empleado" : "Agregar Empleado"}</DialogTitle>
                         <DialogDescription className="text-muted-foreground">
-                            {editing ? "Modifica los datos del personal." : "Completa los datos para registrar un nuevo empleado."}
+                            {/* {editing ? "Modifica los datos del personal." : "Completa los datos para registrar un nuevo empleado."} */}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -448,7 +447,7 @@ const Employees = () => {
 
                     <DialogFooter className="mt-4">
                         <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
-                        <Button onClick={save} className="gold-glow">{editing ? "Guardar Cambios" : "Agregar"}</Button>
+                        <Button onClick={save} className="gold-glow">{editing ? "Guardar Cambios" : "Agregar Empleado"}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

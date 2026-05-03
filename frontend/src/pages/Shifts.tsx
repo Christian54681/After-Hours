@@ -342,6 +342,50 @@ const Shifts = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Cards de turnos */}
+                    <div className="space-y-3">
+                        {filteredShifts.map((shift) => (
+                            <div
+                                key={shift._id}
+                                className="flex items-center justify-between p-4 rounded-xl border border-border/40 bg-background/60 shadow-sm"
+                            >
+                                {/* Info izquierda */}
+                                <div className="flex flex-col">
+                                    <span className="font-semibold text-sm">
+                                        {employeeName(shift.empleadoId)}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {employeeRole(shift.empleadoId)}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {shift.entrada} - {shift.salida}
+                                    </span>
+                                </div>
+
+                                {/* Botón editar */}
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        setEditing(shift);
+                                        setError(null);
+                                        setForm({
+                                            empleadoId: shift.empleadoId,
+                                            sucursalId: shift.sucursalId,
+                                            entrada: shift.entrada,
+                                            salida: shift.salida,
+                                            dias: shift.dias || []
+                                        });
+                                        setDialogOpen(true);
+                                    }}
+                                >
+                                    <Pencil className="w-4 h-4 mr-1" />
+                                    Editar
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </main>
 

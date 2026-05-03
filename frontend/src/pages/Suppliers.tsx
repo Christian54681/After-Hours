@@ -48,11 +48,11 @@ const Suppliers = () => {
 
         if (editing) {
             setSuppliers((prev) => prev.map((s) => (s.id === editing.id ? { ...s, ...form, name } : s)));
-            toast.success("Proveedor actualizado");
+            toast.success("Proveedor Actualizado");
         } else {
             // Rule: every new supplier is registered as active
             setSuppliers((prev) => [...prev, { id: Date.now(), ...form, name, active: true }]);
-            toast.success("Proveedor registrado como activo");
+            toast.success("Proveedor Creado");
         }
         setDialogOpen(false);
     };
@@ -79,10 +79,10 @@ const Suppliers = () => {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <h1 className="text-2xl md:text-3xl font-display font-bold text-gradient-gold">Proveedores</h1>
-                            <p className="text-sm text-muted-foreground mt-1">{suppliers.length} registrados</p>
+                            {/* <p className="text-sm text-muted-foreground mt-1">{suppliers.length} registrados</p> */}
                         </div>
                         <Button onClick={openNew} className="gold-glow hover:scale-[1.02] transition-transform shrink-0">
-                            <Plus className="w-4 h-4 mr-2" /> Registrar proveedor
+                            <Plus className="w-4 h-4 mr-2" /> Agregar Proveedor
                         </Button>
                     </div>
 
@@ -94,26 +94,30 @@ const Suppliers = () => {
                         <div className="grid gap-4">
                             {suppliers.map((s) => (
                                 <div key={s.id} className="glass-card p-5 hover:border-primary/30 transition-colors">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-4 min-w-0">
-                                            <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                                                 <Truck className="w-5 h-5 text-primary" />
                                             </div>
-                                            <div className="min-w-0">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <h3 className="font-semibold text-foreground truncate">{s.name}</h3>
-                                                    <Badge variant={s.active ? "default" : "secondary"} className={s.active ? "bg-primary/15 text-primary border-primary/30" : ""}>
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-foreground">{s.name}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">{s.contactName || "Sin contacto asignado"}</span>
+                                                    <Badge
+                                                        variant={s.active ? "default" : "secondary"}
+                                                        className={`${s.active ? "text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full mt-1" : ""}
+                                                            hover:bg-primary/10 hover:text-primary cursor-default pointer-events-none`}
+                                                    >
                                                         {s.active ? "Activo" : "Inactivo"}
                                                     </Badge>
                                                 </div>
-                                                <p className="text-xs text-muted-foreground truncate">{s.contactName || "Sin contacto asignado"}</p>
                                             </div>
                                         </div>
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setExpanded(expanded === s.id ? null : s.id)}
-                                            className="text-muted-foreground hover:text-primary shrink-0"
+                                            className="text-muted-foreground hover:text-primary"
                                         >
                                             {expanded === s.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                             <span className="ml-1 text-xs">Detalles</span>
@@ -121,23 +125,20 @@ const Suppliers = () => {
                                     </div>
 
                                     {expanded === s.id && (
-                                        <div className="mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="mb-1 mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
                                             {s.phone && (
-                                                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                    <Phone className="w-3.5 h-3.5" /> <span className="text-foreground">{s.phone}</span>
-                                                </p>
+                                                
+                                                <p className="text-sm text-muted-foreground mt-2 ml-3">Teléfono: <span className="text-foreground">{s.phone}</span></p>
                                             )}
                                             {s.email && (
-                                                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                                    <Mail className="w-3.5 h-3.5" /> <span className="text-foreground">{s.email}</span>
-                                                </p>
+                                                <p className="text-sm text-muted-foreground mt-2 ml-3">Correo: <span className="text-foreground">{s.email}</span></p>
                                             )}
-                                            <div className="flex flex-wrap gap-2 pt-2">
-                                                <Button variant="secondary" size="sm" onClick={() => openEdit(s)}>
-                                                    <Pencil className="w-3 h-3 mr-1" /> Editar
-                                                </Button>
+                                            <div className="flex gap-2 pt-2 ml-2">
                                                 <Button variant="outline" size="sm" onClick={() => toggleActive(s)}>
                                                     {s.active ? "Marcar inactivo" : "Reactivar"}
+                                                </Button>
+                                                <Button variant="secondary" size="sm" onClick={() => openEdit(s)}>
+                                                    <Pencil className="w-3 h-3 mr-1" /> Editar
                                                 </Button>
                                                 <Button
                                                     variant="outline"
@@ -161,17 +162,17 @@ const Suppliers = () => {
                 <DialogContent className="bg-card border-border">
                     <DialogHeader>
                         <DialogTitle className="text-foreground font-display">
-                            {editing ? "Editar proveedor" : "Registrar proveedor"}
+                            {editing ? "Editar Proveedor" : "Agregar Proveedor"}
                         </DialogTitle>
                         <DialogDescription className="text-muted-foreground">
-                            {editing
+                            {/* {editing
                                 ? "Modifica los datos del proveedor."
-                                : "Todo proveedor se registra como activo. No se permiten nombres duplicados."}
+                                : "Todo proveedor se registra como activo. No se permiten nombres duplicados."} */}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-2">
                         <div className="space-y-2">
-                            <Label className="text-muted-foreground">Nombre *</Label>
+                            <Label className="text-muted-foreground">Nombre</Label>
                             <Input
                                 value={form.name}
                                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -181,7 +182,7 @@ const Suppliers = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-muted-foreground">Persona de contacto</Label>
+                            <Label className="text-muted-foreground">Persona de Contacto</Label>
                             <Input
                                 value={form.contactName}
                                 onChange={(e) => setForm((f) => ({ ...f, contactName: e.target.value }))}
@@ -214,12 +215,12 @@ const Suppliers = () => {
                             </div>
                         </div>
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="mt-4">
                         <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-border text-muted-foreground">
                             Cancelar
                         </Button>
                         <Button onClick={save} className="gold-glow">
-                            {editing ? "Guardar cambios" : "Registrar"}
+                            {editing ? "Guardar Cambios" : "Agregar Proveedor"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
