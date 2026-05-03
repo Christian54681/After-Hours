@@ -156,21 +156,21 @@ const Sections = () => {
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <h1 className="text-2xl md:text-3xl font-display font-bold text-gradient-gold">Gestión de Secciones</h1>
-                            <p className="text-muted-foreground text-sm">Organiza las áreas físicas de {user?.idSucursalACargo}</p>
+                            {/* <p className="text-muted-foreground text-sm">Organiza las áreas físicas de {user?.idSucursalACargo}</p> */}
                         </div>
                         <Button onClick={openNew} className="gold-glow hover:scale-[1.02] transition-transform w-full sm:w-auto">
-                            <Plus className="w-4 h-4 mr-2" /> Nueva Sección
+                            <Plus className="w-4 h-4 mr-2" /> Agregar Sección
                         </Button>
                     </div>
 
                     {loading ? (
-                        <div className="flex justify-center py-20"><Loader2 className="w-10 h-10 animate-spin text-primary" /></div>
+                        <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
                     ) : (
                         <div className="grid gap-4">
                             {sections.map((s) => (
-                                <div key={s._id} className="glass-card p-5 hover:border-primary/30 transition-all duration-300">
+                                <div key={s._id} className="glass-card p-5 hover:border-primary/30 transition-colors">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                                                 <LayoutGrid className="w-5 h-5 text-primary" />
                                             </div>
@@ -188,44 +188,44 @@ const Sections = () => {
                                             className="text-muted-foreground hover:text-primary"
                                         >
                                             {expanded === s._id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                            <span className="ml-1 text-xs">{expanded === s._id ? "Cerrar" : "Ver Mesas"}</span>
+                                            <span className="ml-1 text-xs">Detalles</span>
                                         </Button>
                                     </div>
 
                                     {expanded === s._id && (
-                                        <div className="mt-3 pt-3 border-t border-border space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="mb-1 mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
                                             <div className="space-y-2">
-                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest ml-2">
                                                     Mesas en esta área ({s.mesasCompletas?.length || 0})
                                                 </p>
-                                                <div className="flex flex-wrap gap-2">
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 ml-1">
                                                     {s.mesasCompletas && s.mesasCompletas.length > 0 ? (
                                                         s.mesasCompletas.map((mesa) => (
-                                                            <div key={mesa._id} className="border border-border rounded-md p-2 w-24 text-center">
-                                                                <p className="text-sm font-medium">{mesa.numeroMesa}</p>
-                                                                <p className="text-xs text-muted-foreground">Capacidad: {mesa.capacidad}</p>
-                                                                <p className={`text-xs font-semibold ${mesa.estado === 1 ? 'text-green-500' : mesa.estado === 2 ? 'text-yellow-500' : 'text-red-500'}`}>
-                                                                    {mesa.estado === 1 ? 'Libre' : mesa.estado === 2 ? 'Ocupada' : 'Reservada'}
+                                                            <div key={mesa._id} className="bg-muted/30 p-3 rounded-lg border border-border/50">
+                                                                <p className="text-xs font-bold text-primary mb-2 uppercase">Mesa {mesa.numeroMesa}</p>
+                                                                <p className="text-xs text-muted-foreground">Capacidad: <span className="text-foreground">{mesa.capacidad} personas</span></p>
+                                                                <p className="text-xs text-muted-foreground mt-1">Estado: <span className={`text-xs font-semibold ${mesa.estado === 1 ? 'text-green-500' : mesa.estado === 2 ? 'text-yellow-500' : 'text-red-500'}`}>
+                                                                    {mesa.estado === 1 ? 'Libre' : mesa.estado === 2 ? 'Ocupada' : 'Reservada'}</span>
                                                                 </p>
                                                             </div>
                                                         ))
                                                     ) : (
-                                                        <p>Sin mesas</p>
+                                                        <p className="text-sm text-muted-foreground ml-2">Sin mesas</p>
                                                     )}
                                                 </div>
                                             </div>
 
-                                            <div className="flex gap-2 pt-2 border-t border-border/50">
+                                            <div className="flex gap-2 pt-2 ml-1">
                                                 {!isConfirmingDelete || isConfirmingDelete !== s._id ? (
                                                     <>
-                                                        <Button variant="secondary" size="sm" onClick={() => openEdit(s)} className="h-8">
+                                                        <Button variant="secondary" size="sm" onClick={() => openEdit(s)}>
                                                             <Pencil className="w-3 h-3 mr-1" /> Editar
                                                         </Button>
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={() => setIsConfirmingDelete(s._id!)}
-                                                            className="h-8 text-muted-foreground hover:text-destructive hover:border-destructive transition-colors">
+                                                            className="text-muted-foreground hover:text-foreground hover:border-muted-foreground">
                                                             <Trash2 className="w-3 h-3 mr-1" /> Eliminar
                                                         </Button>
                                                     </>
@@ -268,17 +268,17 @@ const Sections = () => {
                 <DialogContent className="bg-card border-border max-w-md">
                     <DialogHeader>
                         <DialogTitle className="text-foreground font-display text-xl">
-                            {editing ? "Renombrar Sección" : "Nueva Sección"}
+                            {editing ? "Editar Sección" : "Agregar Sección"}
                         </DialogTitle>
                         <DialogDescription>
-                            Las secciones ayudan a los meseros a ubicar las mesas rápidamente.
+                            {/* Las secciones ayudan a los meseros a ubicar las mesas rápidamente. */}
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-4 py-2">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>ID Identificador</Label>
+                                <Label className="text-muted-foreground">ID Identificador</Label>
                                 <Input
                                     placeholder="Ej: TER-01"
                                     value={form.idSeccion}
@@ -286,7 +286,7 @@ const Sections = () => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Capacidad (Mesas)</Label>
+                                <Label className="text-muted-foreground">Capacidad (Mesas)</Label>
                                 <Input
                                     type="number"
                                     placeholder="0"
@@ -296,7 +296,7 @@ const Sections = () => {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>Nombre de la Sección</Label>
+                            <Label className="text-muted-foreground">Nombre de la Sección</Label>
                             <Input
                                 placeholder="Ej: Terraza Principal"
                                 value={form.nombre}
@@ -306,9 +306,9 @@ const Sections = () => {
                     </div>
 
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancelar</Button>
+                        <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
                         <Button onClick={save} className="gold-glow">
-                            {editing ? "Actualizar" : "Crear Sección"}
+                            {editing ? "Guardar Cambios" : "Agregar Sección"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

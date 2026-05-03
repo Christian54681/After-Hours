@@ -153,7 +153,7 @@ const Tables = () => {
                                 Gestión de Mesas
                             </h1>
                             <p className="text-sm text-muted-foreground">
-                                {tables.length} mesas en total en la sucursal
+                                {/* {tables.length} mesas en total en la sucursal */}
                             </p>
                         </div>
                         <Button onClick={openNewTable} className="gold-glow">
@@ -177,17 +177,19 @@ const Tables = () => {
                                 return (
                                     <div key={t._id} className="glass-card p-5 hover:border-primary/30 transition-colors">
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                                                     <Armchair className="w-5 h-5 text-primary" />
                                                 </div>
                                                 <div>
                                                     <h3 className="text-lg font-semibold text-foreground">Mesa {t.numeroMesa}</h3>
                                                     <div className="flex gap-2 items-center">
-                                                        <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
                                                             {t.nombreSeccion}
                                                         </span>
-                                                        <Badge className={badge.className}>{badge.label}</Badge>
+                                                        <Badge className={`${badge.className} hover:bg-transparent hover:text-inherit cursor-default pointer-events-none`}>
+                                                            {badge.label}
+                                                        </Badge>
                                                     </div>
                                                 </div>
                                             </div>
@@ -196,17 +198,17 @@ const Tables = () => {
                                                 onClick={() => setExpanded(isOpen ? null : t._id)}
                                                 className="text-muted-foreground">
                                                 {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                                <span className="ml-1 text-xs">Opciones</span>
+                                                <span className="ml-1 text-xs">Detalles</span>
                                             </Button>
                                         </div>
 
                                         {isOpen && (
-                                            <div className="mt-3 pt-3 border-t border-border space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                                                <p className="text-sm text-muted-foreground italic">
+                                            <div className="mb-1 mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                                <p className="text-sm text-muted-foreground mt-2 ml-3">
                                                     Capacidad: <span className="text-foreground">{t.capacidad} personas</span>
                                                 </p>
 
-                                                <div className="flex flex-wrap gap-2 pt-2">
+                                                <div className="flex gap-2 pt-2 ml-2">
                                                     {/* BOTÓN EDITAR */}
                                                     <Button
                                                         variant="secondary"
@@ -220,7 +222,7 @@ const Tables = () => {
                                                             });
                                                             setTableDialogOpen(true);
                                                         }}
-                                                        className="h-8">
+                                                        className="">
                                                         <Pencil className="w-3 h-3 mr-1" /> Editar
                                                     </Button>
 
@@ -230,7 +232,7 @@ const Tables = () => {
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={() => setIsConfirmingDelete(t._id)}
-                                                            className="h-8 text-muted-foreground hover:text-destructive hover:border-destructive transition-colors">
+                                                            className="text-muted-foreground hover:text-foreground hover:border-muted-foreground">
                                                             <Trash2 className="w-3 h-3 mr-1" /> Eliminar
                                                         </Button>
                                                     ) : (
@@ -268,13 +270,13 @@ const Tables = () => {
             <Dialog open={tableDialogOpen} onOpenChange={setTableDialogOpen}>
                 <DialogContent className="bg-card border-border">
                     <DialogHeader>
-                        <DialogTitle>{editing ? "Editar mesa" : "Nueva mesa"}</DialogTitle>
-                        <DialogDescription>Asigna un número y una sección para esta mesa.</DialogDescription>
+                        <DialogTitle>{editing ? "Editar Mesa" : "Agregar Mesa"}</DialogTitle>
+                        {/* <DialogDescription>Asigna un número y una sección para esta mesa.</DialogDescription> */}
                     </DialogHeader>
 
-                    <div className="grid grid-cols-2 gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4 py-2">
                         <div className="space-y-2">
-                            <Label>Número de Mesa</Label>
+                            <Label className="text-muted-foreground">Número de Mesa</Label>
                             <Input
                                 type="number" placeholder="Ej: 10"
                                 value={form.number}
@@ -282,7 +284,7 @@ const Tables = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>Capacidad</Label>
+                            <Label className="text-muted-foreground">Capacidad</Label>
                             <Input
                                 type="number"
                                 value={form.capacity}
@@ -292,13 +294,13 @@ const Tables = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Sección / Zona</Label>
+                        <Label className="text-muted-foreground">Sección</Label>
                         <Select
                             value={form.sectionId}
                             onValueChange={(v) => setForm({ ...form, sectionId: v })}
                         >
                             <SelectTrigger className="bg-muted/50">
-                                <SelectValue placeholder="Selecciona una sección" />
+                                <SelectValue placeholder="Selecciona" />
                             </SelectTrigger>
                             <SelectContent>
                                 {sections.map((s) => (
@@ -310,7 +312,7 @@ const Tables = () => {
 
                     <DialogFooter className="mt-4">
                         <Button variant="outline" onClick={() => setTableDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={saveTable} className="gold-glow">Finalizar</Button>
+                        <Button onClick={saveTable} className="gold-glow">{editing ? "Guardar Cambios" : "Agregar Mesa"}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

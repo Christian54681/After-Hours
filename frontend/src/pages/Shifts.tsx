@@ -260,7 +260,7 @@ const Shifts = () => {
                             <p className="text-xs text-muted-foreground">Sucursal: {branchName(adminBranchId)}</p>
                         </div>
                         <Button onClick={handleOpenNew}>
-                            <Plus className="w-4 h-4 mr-2" /> Nuevo Turno
+                            <Plus className="w-4 h-4 mr-2" /> Agregar Turno
                         </Button>
                     </div>
 
@@ -390,11 +390,14 @@ const Shifts = () => {
             </main>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader><DialogTitle>{editing ? "Editar" : "Nuevo"} Turno Semanal</DialogTitle></DialogHeader>
-                    <div className="space-y-4 py-4">
+                <DialogContent className="bg-card border-border max-w-lg max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-foreground font-display">{editing ? "Editar Turno" : "Agregar Turno"} Semanal</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-2">
                         <div className="space-y-2">
-                            <Label>Empleado</Label>
+                            <Label className="text-muted-foreground">Empleado</Label>
                             <Select value={form.empleadoId} onValueChange={(v) => setForm(f => ({ ...f, empleadoId: v }))}>
                                 <SelectTrigger><SelectValue placeholder="Seleccionar empleado" /></SelectTrigger>
                                 <SelectContent>
@@ -408,8 +411,7 @@ const Shifts = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="flex items-center gap-2">
-                                <MapPin className="w-3 h-3 text-primary" />
+                            <Label className="text-muted-foreground">
                                 Sucursal de Gestión
                             </Label>
                             <Input
@@ -424,17 +426,17 @@ const Shifts = () => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label>Entrada</Label>
+                                <Label className="text-muted-foreground">Entrada</Label>
                                 <Input type="time" value={form.entrada} onChange={e => setForm(f => ({ ...f, entrada: e.target.value }))} />
                             </div>
                             <div>
-                                <Label>Salida</Label>
+                                <Label className="text-muted-foreground">Salida</Label>
                                 <Input type="time" value={form.salida} onChange={e => setForm(f => ({ ...f, salida: e.target.value }))} />
                             </div>
                         </div>
 
                         <div className="space-y-3">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Días de la semana</Label>
+                            <Label className="text-muted-foreground">Días de la semana</Label>
                             <div className="flex flex-wrap gap-2">
                                 {WEEK_DAYS.map(d => {
                                     const isSelected = form.dias.includes(d.key as DayKey);
@@ -468,8 +470,8 @@ const Shifts = () => {
                                 {!isConfirmingDelete ? (
                                     // BOTÓN INICIAL
                                     <Button
-                                        variant="ghost"
-                                        className="text-destructive/70 hover:bg-destructive/10 hover:text-destructive transition-all"
+                                        variant="outline"
+                                        className="border-border text-muted-foreground"
                                         onClick={() => setIsConfirmingDelete(true)}
                                     >
                                         <Trash2 className="w-4 h-4 mr-2" />
@@ -487,7 +489,7 @@ const Shifts = () => {
                                             Confirmar
                                         </Button>
                                         <Button
-                                            variant="ghost"
+                                            variant="outline"
                                             size="sm"
                                             onClick={() => setIsConfirmingDelete(false)}
                                         >
@@ -497,8 +499,9 @@ const Shifts = () => {
                                 )}
                             </div>
                         )}
-                        <Button onClick={save} className="bg-primary hover:bg-primary/90">
-                            {editing ? "Actualizar Turno" : "Crear Turno Semanal"}
+                        <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
+                        <Button onClick={save} className="gold-glow">
+                            {editing ? "Guardar Cambios" : "Agregar Turno"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
