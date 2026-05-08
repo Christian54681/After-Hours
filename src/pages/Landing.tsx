@@ -56,6 +56,9 @@ const Landing = () => {
             <Button asChild size="sm">
               <Link to="/registro">Registrarse</Link>
             </Button>
+            <Button asChild size="sm">
+              <Link to="/menu">Ver menú</Link>
+            </Button>
           </div>
         </nav>
       </header>
