@@ -20,6 +20,8 @@ import NotFound from "./pages/NotFound.tsx";
 // import PersonalOperativo from "./pages/PersonalOperativo.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import Meseros from "./pages/Mesero.tsx";
+import Profile from './pages/Profile'; // Importa la nueva página
+import Landing from './pages/Landing';
 
 const queryClient = new QueryClient();
 
@@ -41,13 +43,16 @@ const App = () => (
             <Route path="/admin/mesas" element={<Tables />} />
             <Route path="/empleado" element={<EmployeeDashboard />} />
             <Route path="/empleado/mesero" element={<Meseros />} />
-            <Route path="/admin/secciones" element={<Sections/>} />
+            <Route path="/admin/secciones" element={<Sections />} />
             {/* <Route path="/bartenders" element={<Bartenders />} />
           <Route path="/cajeros" element={<Cajeros />} />
           <Route path="/contadores" element={<Contadores />} />
           <Route path="/meseros" element={<Meseros />} />
           <Route path="/personalop" element={<PersonalOperativo />} /> */}
             <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/perfil" element={<Profile />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

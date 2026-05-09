@@ -1,14 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { GlassWater, Music2, MapPin, Sparkles, Calendar, Star } from "lucide-react";
+import { GlassWater, Music2, MapPin, Sparkles, Calendar, Star, LogOut, ShieldCheck, User as UserIcon } from "lucide-react";
 import heroBar from "@/assets/hero-bar.jpg";
 import cocktail from "@/assets/cocktail.jpg";
 import lounge from "@/assets/lounge.jpg";
 import liveMusic from "@/assets/live-music.jpg";
 import { useAuth } from "@/context/AuthContext";
 
+
+
 const Landing = () => {
+
   const experiences = [
     {
       img: cocktail,
@@ -36,11 +39,14 @@ const Landing = () => {
     { name: "Aurora Lounge", area: "Condesa", hours: "20:00 - 03:00" },
   ];
 
-  const { user } = useAuth()
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handlePrueba = () => {
     console.log("Usuario actual:", user);
   }
+
+  const esStaff = user?.email.endsWith("@afterhours.com");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -49,20 +55,45 @@ const Landing = () => {
         <nav className="container flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <GlassWater className="w-5 h-5 text-primary" />
-            <span className="font-display text-xl tracking-wide">Noctura</span>
+            <span className="font-display text-xl tracking-wide uppercase">Noctura</span>
           </Link>
-          <div className="hidden md:flex items-center gap-8 text-sm">
+
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium">
             <a href="#experiencia" className="hover:text-primary transition-colors">Experiencia</a>
             <a href="#sucursales" className="hover:text-primary transition-colors">Sucursales</a>
-            <a href="#eventos" className="hover:text-primary transition-colors">Eventos</a>
+            {esStaff && (
+              <Link to="/admin" className="text-primary flex items-center gap-1.5 font-bold animate-in fade-in slide-in-from-top-1">
+                <ShieldCheck className="w-4 h-4" /> Panel Staff
+              </Link>
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/login">Iniciar sesión</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to="/registro">Registrarse</Link>
-            </Button>
+
+          <div className="flex items-center gap-4">
+            {user ? (
+              <div className="flex items-center gap-4">
+                <Link to="/perfil" className="flex items-center gap-2 group">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">
+                    {user.username[0].toUpperCase()}
+                  </div>
+                  <span className="text-sm font-semibold hidden sm:inline">{user.username}</span>
+                </Link>
+                <button
+                  onClick={() => { logout(); navigate("/"); }}
+                  className="text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button asChild variant="ghost" size="sm">
+                  <Link to="/login">Iniciar sesión</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to="/registro">Registrarse</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </nav>
       </header>

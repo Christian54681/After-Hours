@@ -1,9 +1,8 @@
-// context/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserFactory } from '../domain/UserFactory';
 
 interface AuthContextType {
-    user: any | null; // la instancia se guarda aqui
+    user: any | null;
     login: (userData: any, token: string) => void;
     logout: () => void;
     loading: boolean;
@@ -15,16 +14,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Al cargar la app, intentamos recuperar la sesión
     useEffect(() => {
         const savedUser = localStorage.getItem('user_data');
         if (savedUser) {
             try {
+                const data = JSON.parse(savedUser);
                 // Re-instanciamos usando la fábrica para recuperar los métodos
-                const instancia = UserFactory.crearUsuario(JSON.parse(savedUser));
+                const instancia = UserFactory.crearUsuario(data);
                 setUser(instancia);
+                console.log("✅ Sesión recuperada para:", data.username);
             } catch (e) {
-                console.error("Error recuperando sesión", e);
+                console.error("❌ Error al recuperar sesión:", e);
+                localStorage.removeItem('user_data');
+                localStorage.removeItem('token');
             }
         }
         setLoading(false);
@@ -32,14 +34,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = (userData: any, token: string) => {
         localStorage.setItem('token', token);
-        localStorage.setItem('user_data', JSON.stringify(userData)); // Guardamos el JSON plano
-        
-        const instancia = UserFactory.crearUsuario(userData); // Creamos la clase
+        localStorage.setItem('user_data', JSON.stringify(userData));
+        const instancia = UserFactory.crearUsuario(userData);
         setUser(instancia);
     };
 
     const logout = () => {
-        localStorage.clear();
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_data');
         setUser(null);
     };
 
