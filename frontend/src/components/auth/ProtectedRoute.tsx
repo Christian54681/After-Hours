@@ -4,9 +4,10 @@ import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
     allowedRoles?: string[];
+    requiredType?: "cliente" | "empleado";
 }
 
-export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({ allowedRoles, requiredType }: ProtectedRouteProps) => {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -17,12 +18,14 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
         );
     }
 
-    if (!user) {
-        return <Navigate to="/login" replace />;
+    if (!user) return <Navigate to="/login" replace />;
+
+    if (requiredType && user.tipo !== requiredType) {
+        return <Navigate to="/" replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(user.tipoRol)) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/empleado" replace />;
     }
 
     return <Outlet />;

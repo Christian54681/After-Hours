@@ -17,8 +17,6 @@ import NotFound from "./pages/NotFound.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import Meseros from "./pages/Mesero.tsx";
 import Profile from './pages/Profile';
-
-// Importa el componente de protección
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
 
 const queryClient = new QueryClient();
@@ -35,7 +33,10 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Register />} />
             <Route
-              element={<ProtectedRoute allowedRoles={["AdminGeneral", "AdminSucursal"]} />}
+              element={
+                <ProtectedRoute
+                  requiredType="empleado"
+                  allowedRoles={["AdminGeneral", "AdminSucursal"]} />}
             >
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/empleados" element={<Employees />} />
@@ -45,9 +46,11 @@ const App = () => (
               <Route path="/admin/secciones" element={<Sections />} />
             </Route>
 
-            <Route element={<ProtectedRoute />}>
+            <Route element={<ProtectedRoute requiredType="empleado" />}>
               <Route path="/empleado" element={<EmployeeDashboard />} />
               <Route path="/empleado/mesero" element={<Meseros />} />
+            </Route>
+            <Route element={<ProtectedRoute />}>
               <Route path="/perfil" element={<Profile />} />
             </Route>
 

@@ -16,8 +16,9 @@ export class AdminGeneral extends Empleado {
         idGlobal: number,
         todasLasSucursales: number[] = [],
         createdAt?: Date,
+        username?: string
     ) {
-        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, undefined, undefined, createdAt); 
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, username, createdAt);
         this.idGlobal = idGlobal;
         this.todasLasSucursales = todasLasSucursales;
     }

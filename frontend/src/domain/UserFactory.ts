@@ -100,7 +100,9 @@ export class UserFactory {
                         info.tipoRol,
                         info.idEmpleado?.toString(),
                         info.idSucursalACargo || 0,
-                        info.presupuestoSucursal || 0
+                        info.presupuestoSucursal || 0,
+                        username,
+                        fechaContrato
                     );
 
                 case "AdminGeneral":
@@ -112,7 +114,8 @@ export class UserFactory {
                         info.tipoRol,
                         info.idEmpleado?.toString(),
                         info.idGlobal || 1,
-                        info.todasLasSucursales || []
+                        info.todasLasSucursales || [],
+                        fechaContrato
                     );
 
                 case "PersonalOperativo":

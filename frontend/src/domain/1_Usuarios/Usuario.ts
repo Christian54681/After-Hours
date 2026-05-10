@@ -22,7 +22,7 @@ export class Usuario {
         this.telefono = telefono;
         this.estado = estado;
         this.username = username || email.split('@')[0];
-        this.createdAt = createdAt || new Date();
+        this.createdAt = createdAt
     }
 
     //metodos
