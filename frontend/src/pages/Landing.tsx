@@ -54,7 +54,7 @@ const Landing = () => {
         <nav className="container flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <GlassWater className="w-5 h-5 text-primary" />
-            <span className="font-display text-xl tracking-wide uppercase">Noctura</span>
+            <span className="font-display text-xl tracking-wide uppercase">After Hours</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium">
@@ -191,7 +191,7 @@ const Landing = () => {
         <Card className="glass-card overflow-hidden">
           <div className="grid md:grid-cols-2 items-center">
             <div className="p-10 md:p-16">
-              <span className="text-xs uppercase tracking-[0.3em] text-primary">Miembros Noctura</span>
+              <span className="text-xs uppercase tracking-[0.3em] text-primary">Miembros After Hours</span>
               <h2 className="font-display text-4xl md:text-5xl mt-3 mb-6">
                 Acceso exclusivo <span className="text-gradient-gold">a la noche</span>
               </h2>
@@ -253,9 +253,9 @@ const Landing = () => {
         <div className="container flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <GlassWater className="w-4 h-4 text-primary" />
-            <span className="font-display text-lg text-foreground">Noctura</span>
+            <span className="font-display text-lg text-foreground">After Hours</span>
           </div>
-          <p>© {new Date().getFullYear()} Noctura. Bebe con responsabilidad.</p>
+          <p>© {new Date().getFullYear()} After Hours. Bebe con responsabilidad.</p>
           <Link to="/admin" className="hover:text-primary transition-colors">
             Acceso administrativo
           </Link>

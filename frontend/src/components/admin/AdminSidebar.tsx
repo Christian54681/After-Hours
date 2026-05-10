@@ -26,14 +26,16 @@ export const AdminSidebar = () => {
     return (
         <aside className="w-64 border-r border-border bg-card/50 flex-col shrink-0 hidden md:flex">
             <div className="p-6 border-b border-border">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                        <Wine className="w-5 h-5 text-primary" />
+                <Link to="/">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                            <Wine className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-xl font-display font-bold text-gradient-gold">
+                            BarManager
+                        </span>
                     </div>
-                    <span className="text-xl font-display font-bold text-gradient-gold">
-                        BarManager
-                    </span>
-                </div>
+                </Link>
             </div>
 
             <nav className="flex-1 p-4 space-y-1">

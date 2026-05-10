@@ -18,6 +18,9 @@ import { AuthProvider } from "./context/AuthContext.tsx";
 import Meseros from "./pages/Mesero.tsx";
 import Profile from './pages/Profile';
 
+// Importa el componente de protección
+import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,15 +34,23 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Register />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/empleados" element={<Employees />} />
-            <Route path="/admin/turnos" element={<Shifts />} />
-            <Route path="/admin/proveedores" element={<Suppliers />} />
-            <Route path="/admin/mesas" element={<Tables />} />
-            <Route path="/empleado" element={<EmployeeDashboard />} />
-            <Route path="/empleado/mesero" element={<Meseros />} />
-            <Route path="/admin/secciones" element={<Sections />} />
-            <Route path="/perfil" element={<Profile />} />
+            <Route
+              element={<ProtectedRoute allowedRoles={["AdminGeneral", "AdminSucursal"]} />}
+            >
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/empleados" element={<Employees />} />
+              <Route path="/admin/turnos" element={<Shifts />} />
+              <Route path="/admin/proveedores" element={<Suppliers />} />
+              <Route path="/admin/mesas" element={<Tables />} />
+              <Route path="/admin/secciones" element={<Sections />} />
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/empleado" element={<EmployeeDashboard />} />
+              <Route path="/empleado/mesero" element={<Meseros />} />
+              <Route path="/perfil" element={<Profile />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
