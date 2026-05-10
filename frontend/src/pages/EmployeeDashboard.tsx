@@ -66,9 +66,11 @@ const EmployeeDashboard = () => {
         const getMesas = async () => {
             try {
                 setLoadingShift(true);
-                const response = await fetch(`${urlbase}/admin/tables`);
-                if (!response.ok) throw new Error("Mesas no encontradas");
-                const data = await response.json();
+                const res = await fetch(`${urlbase}/admin/sections/branch/${user.idSucursal}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                console.log("Mesas obtenidas:", data);
                 setTables(data);
             } catch (e) {
                 setTables([]);
@@ -255,7 +257,9 @@ const EmployeeDashboard = () => {
                                     <UtensilsCrossed className="w-5 h-5 text-primary" />
                                     <h3 className="font-display text-xl uppercase tracking-tighter">Área de Servicio</h3>
                                 </div>
-                                <span className="text-[10px] font-mono text-muted-foreground uppercase">{tables.length} Mesas Activas</span>
+                                <span className="text-[10px] font-mono text-muted-foreground uppercase">
+                                    {tables.reduce((acc, seccion) => acc + seccion.mesasCompletas.length, 0)} Mesas Activas
+                                </span>
                             </div>
 
                             {tables.length === 0 ? (
@@ -264,21 +268,44 @@ const EmployeeDashboard = () => {
                                     <p className="text-sm text-muted-foreground">Cargando disposición de salón...</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {tables.map((t) => (
-                                        <button
-                                            key={t.id}
-                                            onClick={() => setSelectedTableId(t.id)}
-                                            className={`relative group p-4 rounded-2xl border transition-all duration-300 ${selectedTableId === t.id ? "bg-primary border-primary text-black shadow-gold" : "bg-card/40 border-border hover:border-primary/50"}`}
-                                        >
-                                            <div className="flex flex-col items-center gap-2">
-                                                <Armchair className={`w-6 h-6 ${selectedTableId === t.id ? "text-black" : "text-primary"}`} />
-                                                <span className="font-display text-lg uppercase tracking-tighter">Mesa {t.numeroMesa}</span>
-                                                <Badge className={`text-[9px] pointer-events-none ${t.estado === 0 ? "bg-red-500/20 text-red-500 border-none" : "bg-green-500/20 text-green-500 border-none"}`}>
-                                                    {t.estado === 0 ? "En uso" : "Libre"}  {/* 0 = ocupado y 1 = libre */}
-                                                </Badge>
+                                <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">
+                                    {tables.map((seccion) => (
+                                        // Iteramos por cada sección recibida
+                                        <div key={seccion._id} className="mb-8">
+                                            {/* Título de la sección para organizar la vista */}
+                                            <h3 className="text-primary font-display mb-4 uppercase tracking-widest text-sm">
+                                                {seccion.nombre}
+                                            </h3>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-3 gap-4">
+                                                {seccion.mesasCompletas.map((mesa) => (
+                                                    // Iteramos por cada mesa dentro de la sección
+                                                    <button
+                                                        key={mesa._id}
+                                                        onClick={() => setSelectedTableId(mesa._id)}
+                                                        className={`relative group p-4 rounded-2xl border transition-all duration-300 ${selectedTableId === mesa._id
+                                                            ? "bg-primary border-primary text-black shadow-gold"
+                                                            : "bg-card/40 border-border hover:border-primary/50"
+                                                            }`}
+                                                    >
+                                                        <div className="flex flex-col items-center gap-2">
+                                                            <Armchair className={`w-6 h-6 ${selectedTableId === mesa._id ? "text-black" : "text-primary"}`} />
+
+                                                            <span className="font-display text-lg uppercase tracking-tighter">
+                                                                Mesa {mesa.numeroMesa}
+                                                            </span>
+
+                                                            <Badge className={`text-[9px] pointer-events-none ${mesa.estado === 0
+                                                                ? "bg-red-500/20 text-red-500 border-none"
+                                                                : "bg-green-500/20 text-green-500 border-none"
+                                                                }`}>
+                                                                {mesa.estado === 0 ? "En uso" : "Libre"}
+                                                            </Badge>
+                                                        </div>
+                                                    </button>
+                                                ))}
                                             </div>
-                                        </button>
+                                        </div>
                                     ))}
                                 </div>
                             )}
