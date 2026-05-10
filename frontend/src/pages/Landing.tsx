@@ -45,6 +45,7 @@ const Landing = () => {
   }
 
   const esStaff = user?.tipoRol === "AdminGeneral" || user?.tipoRol === "AdminSucursal";
+  const rutaStaff = user?.tipoRol === "AdminGeneral" ? "/admin" : (user?.tipoRol === "AdminSucursal" ? "/admin/empleados" : "/login");
   const ruta = user?.tipo === "cliente" ? "/perfil" : (user ? "/empleado" : "/login");
 
   return (
@@ -61,7 +62,7 @@ const Landing = () => {
             <a href="#experiencia" className="hover:text-primary transition-colors">Experiencia</a>
             <a href="#sucursales" className="hover:text-primary transition-colors">Sucursales</a>
             {esStaff && (
-              <Link to="/admin" className="text-primary flex items-center gap-1.5 font-bold animate-in fade-in slide-in-from-top-1">
+              <Link to={rutaStaff} className="text-primary flex items-center gap-1.5 font-bold animate-in fade-in slide-in-from-top-1">
                 <ShieldCheck className="w-4 h-4" /> Panel Staff
               </Link>
             )}

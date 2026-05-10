@@ -34,7 +34,7 @@ const Admin = () => {
 
       // Cargamos sucursales y empleados (para extraer los gerentes) en paralelo
       const [resBranches, resEmps] = await Promise.all([
-        fetch(`${urlbase}/admin/branches`),
+        fetch(`${urlbase}/admin/branches`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${urlbase}/admin/empleados/all`, {
           headers: { Authorization: `Bearer ${token}` }
         })
