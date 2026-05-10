@@ -41,10 +41,11 @@ export class UserFactory {
                         info.tipoRol || 'Mesero',
                         idFinal,
                         info.areaActual || "Piso",
-                        info.activo ?? true,
                         info.zonaAsignada || "Sin zona",
                         info.mesasACargo || 0,
                         fechaContrato,
+                        username,
+                        info.idSucursal
                     );
                     (mesero as any).username = username || email.split('@')[0];
                     return mesero;
@@ -102,7 +103,8 @@ export class UserFactory {
                         info.idSucursalACargo,
                         info.presupuestoSucursal || 0,
                         username,
-                        fechaContrato
+                        fechaContrato,
+                        info.idSucursal
                     );
 
                 case "AdminGeneral":

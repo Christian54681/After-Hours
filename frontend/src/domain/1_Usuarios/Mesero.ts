@@ -13,13 +13,13 @@ export class Mesero extends PersonalOperativo {
         tipoRol: string = 'Mesero',
         idEmpleado: string,
         areaActual: string,
-        activo: boolean = true,
         zonaAsignada: string,
         mesasACargo: number = 0,
         createdAt?: Date,
-        username?: string
+        username?: string,
+        idSucursal?: string
     ) {
-        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, activo, createdAt, username);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, areaActual, createdAt, username, idSucursal);
 
         this.zonaAsignada = zonaAsignada;
         this.mesasACargo = mesasACargo;
