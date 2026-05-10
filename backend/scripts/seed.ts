@@ -14,6 +14,7 @@ async function seed() {
         await db.collection("branches").deleteMany({});
         await db.collection("sections").deleteMany({});
         await db.collection("tables").deleteMany({});
+        await db.collection("providers").deleteMany({});
 
         const passHash = await bcrypt.hash("admin123", 10);
 
@@ -180,6 +181,31 @@ async function seed() {
         });
 
         console.log("✅ Base de datos inundada con éxito.");
+
+        // Dentro de tu seed.ts, antes del finally
+        console.log("🚚 Creando Proveedores...");
+
+        const proveedores = [
+            {
+                idProvedor: 1, // Siguiendo tu diagrama (int)
+                empresa: "Cervecería del Valle",
+                contacto: "Carlos Gómez - 555-0123",
+                tiempoEntregaDias: 2,
+                estado: "Activo",
+                createdAt: new Date()
+            },
+            {
+                idProvedor: 2,
+                empresa: "Insumos Gourmet S.A.",
+                contacto: "Marta Sánchez - 555-0456",
+                tiempoEntregaDias: 3,
+                estado: "Activo",
+                createdAt: new Date()
+            }
+        ];
+
+        await db.collection("providers").insertMany(proveedores);
+        console.log("✅ Proveedores listos.");
 
     } catch (error) {
         console.error("❌ Error:", error);
