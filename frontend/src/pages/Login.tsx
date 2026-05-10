@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Wine, Mail, Lock } from "lucide-react";
 import barBg from "@/assets/bar-bg.jpg";
-import { useNavigate } from "react-router-dom"; // Cambia el window.location por esto
-import { toast } from "sonner"; // Para avisar si el login falló
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 
 
@@ -16,41 +16,6 @@ const Login = () => {
   const { login } = useAuth();
 
   const navigate = useNavigate();
-
-  {/*
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      // hacemos la petición al backend para validar las credenciales
-      const response = await fetch("http://localhost:3000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("¡Bienvenido de nuevo!");
-        if (data.token) localStorage.setItem("token", data.token);
-
-        // AQUI FALTA AGREGAR LOGICA PARA VALIDAR SI ES ADMIN O NO
-        // Y MANDAR A LA PAGINA DE ADMIN O ALA DE USUARIO COMUN
-
-        // navegamos al admin de verdad
-        navigate("/admin");
-      } else {
-        toast.error(data.error || "Credenciales incorrectas");
-      }
-    } catch (error) {
-      console.error("Error en el login:", error);
-      toast.error("No se pudo conectar con el servidor");
-    }
-  };
-  */}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,12 +29,10 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        //console.log("datos q llegan:", data.user); 
         login(data.user, data.token);
 
         toast.success("¡Bienvenido!");
         // Redirige según el rol del usuario
-        console.log("Usuario logueado:", data.user);
         const userRole = data.user.info.tipoRol;
         if (userRole === "AdminSucursal" || userRole === "AdminGeneral") {
           navigate("/admin");
@@ -120,6 +83,7 @@ const Login = () => {
                 <Input
                   id="email"
                   type="email"
+                  autoComplete="email"
                   placeholder="tu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -135,6 +99,7 @@ const Login = () => {
                 <Input
                   id="password"
                   type="password"
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

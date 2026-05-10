@@ -8,8 +8,6 @@ import lounge from "@/assets/lounge.jpg";
 import liveMusic from "@/assets/live-music.jpg";
 import { useAuth } from "@/context/AuthContext";
 
-
-
 const Landing = () => {
 
   const experiences = [
@@ -46,7 +44,8 @@ const Landing = () => {
     console.log("Usuario actual:", user);
   }
 
-  const esStaff = user?.email.endsWith("@afterhours.com");
+  const esStaff = user?.tipoRol === "AdminGeneral" || user?.tipoRol === "AdminSucursal";
+  const ruta = user?.tipo === "cliente" ? "/perfil" : (user ? "/empleado" : "/login");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -71,7 +70,7 @@ const Landing = () => {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <Link to="/perfil" className="flex items-center gap-2 group">
+                <Link to={ruta} className="flex items-center gap-2 group">
                   <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-bold transition-transform group-hover:scale-110">
                     {user.username[0].toUpperCase()}
                   </div>

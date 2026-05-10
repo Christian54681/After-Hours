@@ -18,7 +18,7 @@ export const MobileNav = () => {
     return (
         <div className="grid grid-cols-2 gap-2 mb-6 md:hidden">
             {items
-                .filter(item => item.roles.includes(user.tipoRol))
+                .filter(item => item.roles.includes(user?.tipoRol))
                 .map(({ to, label, icon: Icon }) => (
                     <Link key={to} to={to} className="w-full">
                         <Button variant={pathname === to ? "default" : "secondary"} className="w-full">

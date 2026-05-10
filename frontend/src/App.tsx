@@ -14,14 +14,9 @@ import Tables from "./pages/Tables.tsx";
 import EmployeeDashboard from "./pages/EmployeeDashboard.tsx";
 import Sections from "./pages/Sections.tsx";
 import NotFound from "./pages/NotFound.tsx";
-// import Bartenders from "./pages/Bartender.tsx";
-// import Cajeros from "./pages/Cajero.tsx";
-// import Contadores from "./pages/Contador.tsx";
-// import PersonalOperativo from "./pages/PersonalOperativo.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import Meseros from "./pages/Mesero.tsx";
-import Profile from './pages/Profile'; // Importa la nueva página
-import Landing from './pages/Landing';
+import Profile from './pages/Profile';
 
 const queryClient = new QueryClient();
 
@@ -31,7 +26,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -44,15 +39,8 @@ const App = () => (
             <Route path="/empleado" element={<EmployeeDashboard />} />
             <Route path="/empleado/mesero" element={<Meseros />} />
             <Route path="/admin/secciones" element={<Sections />} />
-            {/* <Route path="/bartenders" element={<Bartenders />} />
-          <Route path="/cajeros" element={<Cajeros />} />
-          <Route path="/contadores" element={<Contadores />} />
-          <Route path="/meseros" element={<Meseros />} />
-          <Route path="/personalop" element={<PersonalOperativo />} /> */}
-            <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
             <Route path="/perfil" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

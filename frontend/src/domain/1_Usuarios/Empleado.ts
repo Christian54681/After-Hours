@@ -6,6 +6,7 @@ export class Empleado extends Usuario {
     //atributos
     public idEmpleado: string;
     public tipoRol: string;
+    public tipo: string = "empleado";
 
     constructor(
         nombreCompleto: string,

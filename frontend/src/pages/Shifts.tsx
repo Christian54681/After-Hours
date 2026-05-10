@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { MobileNav } from "@/components/admin/MobileNav";
-
 import { intervalsForDay } from "@/lib/shiftConflicts";
 import { useAuth } from "@/context/AuthContext";
 

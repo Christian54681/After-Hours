@@ -22,9 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 // Re-instanciamos usando la fábrica para recuperar los métodos
                 const instancia = UserFactory.crearUsuario(data);
                 setUser(instancia);
-                console.log("✅ Sesión recuperada para:", data.username);
             } catch (e) {
-                console.error("❌ Error al recuperar sesión:", e);
                 localStorage.removeItem('user_data');
                 localStorage.removeItem('token');
             }

@@ -6,6 +6,7 @@ export class Cliente {
     public email: string;
     public createdAt: Date;
     public clienteInfo: number[];
+    public tipo: string = "cliente";
 
 
     constructor(
