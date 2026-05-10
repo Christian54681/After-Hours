@@ -3,7 +3,7 @@ import { Empleado } from "./Empleado";
 
 export class AdminSucursal extends Empleado {
     //atributos
-    public idSucursalACargo: number;
+    public idSucursalACargo: string;
     public presupuestoSucursal: number;
 
     constructor(
@@ -13,7 +13,7 @@ export class AdminSucursal extends Empleado {
         estado: string = 'activo',
         tipoRol: string,
         idEmpleado: string,
-        idSucursalACargo: number,
+        idSucursalACargo: string,
         presupuestoSucursal: number,
         username?: string,
         createdAt?: Date,

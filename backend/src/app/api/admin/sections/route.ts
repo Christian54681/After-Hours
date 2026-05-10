@@ -24,19 +24,22 @@ export async function POST(req: Request) {
             mesasCompletas: []
         };
 
-        // Insertar en la colección de secciones (opcional, pero buena práctica)
+        // Insertar en la colección global de secciones
         const seccionResult = await db.collection("sections").insertOne(nuevaSeccion);
+        const newId = seccionResult.insertedId;
 
-        // Agregamos el objeto completo al array 'secciones' de la sucursal
+        // Vincular a la sucursal: Objeto embebido + Array de IDs (seccionesIds)
         const updateResult = await db.collection("branches").updateOne(
             { idSucursal: idSucursal },
             {
                 $push: {
                     secciones: {
-                        _id: seccionResult.insertedId,
+                        _id: newId,
                         ...nuevaSeccion
-                    }
-                } as any
+                    },
+                    seccionesIds: newId
+                } as any,
+                $set: { updatedAt: new Date() }
             }
         );
 
@@ -44,8 +47,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Sucursal no encontrada para vincular" }, { status: 404 });
         }
 
-        return NextResponse.json({ success: true, idSeccionDB: seccionResult.insertedId });
+        return NextResponse.json({ success: true, idSeccionDB: newId });
+
     } catch (error) {
+        console.error("Error al crear sección:", error);
         return NextResponse.json({ error: "Error al crear y vincular sección" }, { status: 500 });
     }
 }

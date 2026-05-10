@@ -1,5 +1,4 @@
-// scripts/seed.ts
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const bcrypt = require('bcryptjs');
 
 async function seed() {
@@ -10,38 +9,29 @@ async function seed() {
         await client.connect();
         const db = client.db("after_hours");
 
-        // 1. LIMPIEZA TOTAL (Reset de todas las colecciones involucradas)
         console.log("🧹 Limpiando base de datos...");
         await db.collection("users").deleteMany({});
         await db.collection("branches").deleteMany({});
         await db.collection("sections").deleteMany({});
         await db.collection("tables").deleteMany({});
-        await db.collection("orders").deleteMany({});
 
-        const salt = await bcrypt.genSalt(10);
-        const passHash = await bcrypt.hash("admin123", salt);
+        const passHash = await bcrypt.hash("admin123", 10);
 
-        // 2. INSERTAR USUARIOS (Admin y Mesero)
-        console.log("👥 Creando usuarios...");
-        await db.collection("users").insertMany([
+        console.log("👥 Creando Staff...");
+        const usersResult = await db.collection("users").insertMany([
             {
-                username: "Christian.admin",
+                username: "christian.admin",
                 email: "christian@afterhours.com",
                 password: passHash,
                 tipo: "empleado",
                 createdAt: new Date(),
                 empleadoInfo: {
-                    // Atributos de clase EMPLEADO (Padre)
                     idSucursal: "GLOBAL",
-                    idEmpleado: 505,
+                    idEmpleado: 500,
                     nombreCompleto: "Christian Admin",
-                    telefono: "555-9876",
                     tipoRol: "AdminGeneral",
-                    estado: "Inactivo",
-
-                    // Atributos de clase ADMIN SUCURSAL (Hija)
-                    idGlobal: 1,
-                    todasLasSucursales: ["SUC_001"]
+                    estado: "Activo",
+                    todasLasSucursales: ['SUC_001', 'SUC_002', 'SUC_003']
                 }
             },
             {
@@ -51,90 +41,148 @@ async function seed() {
                 tipo: "empleado",
                 createdAt: new Date(),
                 empleadoInfo: {
-                    // Atributos de clase EMPLEADO (Padre)
                     idSucursal: "SUC_001",
                     idEmpleado: 201,
                     nombreCompleto: "Ana Sucursal",
-                    telefono: "555-9876",
                     tipoRol: "AdminSucursal",
                     estado: "Activo",
-
-                    // Atributos de clase ADMIN SUCURSAL (Hija)
                     idSucursalACargo: "SUC_001",
-                    presupuestoSucursal: 50000.00
+                    presupuestoSucursal: 50000
                 }
             },
             {
-                username: "josue.mesero",
-                email: "josue@afterhours.com",
+                username: "marcos.admin",
+                email: "marcos@afterhours.com",
                 password: passHash,
                 tipo: "empleado",
                 createdAt: new Date(),
                 empleadoInfo: {
-                    // Atributos de clase EMPLEADO (Padre)
-                    idSucursal: "SUC_001",
-                    idEmpleado: 101,
-                    nombreCompleto: "Josue Mesero",
-                    telefono: "555-1234",
-                    tipoRol: "Mesero",
+                    idSucursal: "SUC_002",
+                    idEmpleado: 202,
+                    nombreCompleto: "Marcos Gerente",
+                    tipoRol: "AdminSucursal",
                     estado: "Activo",
-
-                    // Atributos de clase PERSONAL OPERATIVO (Hija intermedia)
-                    areaActual: "Terraza",
-                    activo: true,
-
-                    // Atributos de clase MESERO (Hija final)
-                    zonaAsignada: "VIP",
-                    mesasACargo: [1, 2, 3]
+                    idSucursalACargo: "SUC_002",
+                    presupuestoSucursal: 40000
+                }
+            },
+            {
+                username: "sofia.admin",
+                email: "sofia@afterhours.com",
+                password: passHash,
+                tipo: "empleado",
+                createdAt: new Date(),
+                empleadoInfo: {
+                    idSucursal: "SUC_003",
+                    idEmpleado: 203,
+                    nombreCompleto: "Sofia Admin",
+                    tipoRol: "AdminSucursal",
+                    estado: "Activo",
+                    idSucursalACargo: "SUC_003",
+                    presupuestoSucursal: 60000
                 }
             }
         ]);
 
-        // 3. INSERTAR MESAS
-        console.log("🪑 Creando mesas...");
-        const mesasTerrazaResult = await db.collection("tables").insertMany([
-            { numeroMesa: 1, capacidad: 4, estado: 1 },
-            { numeroMesa: 2, capacidad: 2, estado: 1 },
-            { numeroMesa: 3, capacidad: 6, estado: 1 }
-        ]);
+        const ids = usersResult.insertedIds;
 
-        const mesasBarraResult = await db.collection("tables").insertMany([
-            { numeroMesa: 10, capacidad: 1, estado: 1 },
-            { numeroMesa: 11, capacidad: 1, estado: 1 }
-        ]);
+        // --- SUCURSAL 1 (SUC_001) ---
+        console.log("🏢 Creando SUC_001...");
+        const mesasS1 = [
+            { _id: new ObjectId(), numeroMesa: 1, capacidad: 4, estado: 1 },
+            { _id: new ObjectId(), numeroMesa: 2, capacidad: 2, estado: 1 }
+        ];
+        await db.collection("tables").insertMany(mesasS1);
 
-        // 4. INSERTAR SECCIONES (Referenciando los IDs de las mesas)
-        console.log("📂 Creando secciones...");
-        const seccionTerraza = await db.collection("sections").insertOne({
-            idSeccion: "TERRAZA-01",
-            nombre: "Terraza",
+        const sec1Id = new ObjectId();
+        const sec1 = {
+            _id: sec1Id,
+            idSeccion: "TER-01",
+            nombre: "Terraza Centro",
             capacidadMax: 20,
-            mesasIds: Object.values(mesasTerrazaResult.insertedIds)
-        });
+            mesasIds: mesasS1.map(m => m._id),
+            mesasCompletas: mesasS1
+        };
+        await db.collection("sections").insertOne(sec1);
 
-        const seccionBarra = await db.collection("sections").insertOne({
-            idSeccion: "BARRA-01",
-            nombre: "Barra Alta",
-            capacidadMax: 10,
-            mesasIds: Object.values(mesasBarraResult.insertedIds)
-        });
-
-        // 5. INSERTAR SUCURSAL (Referenciando los IDs de las secciones)
-        console.log("🏢 Creando sucursal...");
         await db.collection("branches").insertOne({
             idSucursal: "SUC_001",
             nombre: "After Hours Centro",
-            direccion: "Calle Principal #123",
+            direccion: "Av. Reforma 100",
             tipoBar: "Premium",
-            encargado: "Administrador Sucursal",
-            seccionesIds: [seccionTerraza.insertedId, seccionBarra.insertedId]
+            encargado: ids[1].toString(),
+            seccionesIds: [sec1Id],
+            secciones: [sec1],
+            estado: "Activo",
+            updatedAt: new Date()
         });
 
-        console.log("✅ Estructura normalizada con éxito (Mesas -> Secciones -> Sucursal).");
-        console.log("👉 Acceso: admin / admin123");
+        // --- SUCURSAL 2 (SUC_002) ---
+        console.log("🏢 Creando SUC_002...");
+        const mesasS2 = [
+            { _id: new ObjectId(), numeroMesa: 10, capacidad: 4, estado: 1 },
+            { _id: new ObjectId(), numeroMesa: 11, capacidad: 4, estado: 1 }
+        ];
+        await db.collection("tables").insertMany(mesasS2);
+
+        const sec2Id = new ObjectId();
+        const sec2 = {
+            _id: sec2Id,
+            idSeccion: "GEN-01",
+            nombre: "General Norte",
+            capacidadMax: 40,
+            mesasIds: mesasS2.map(m => m._id),
+            mesasCompletas: mesasS2
+        };
+        await db.collection("sections").insertOne(sec2);
+
+        await db.collection("branches").insertOne({
+            idSucursal: "SUC_002",
+            nombre: "After Hours Norte",
+            direccion: "Calle Norte 50",
+            tipoBar: "Universitario",
+            encargado: ids[2].toString(),
+            seccionesIds: [sec2Id],
+            secciones: [sec2],
+            estado: "Activo",
+            updatedAt: new Date()
+        });
+
+        // --- SUCURSAL 3 (SUC_003) ---
+        console.log("🏢 Creando SUC_003...");
+        const mesasS3 = [
+            { _id: new ObjectId(), numeroMesa: 20, capacidad: 2, estado: 1 },
+            { _id: new ObjectId(), numeroMesa: 21, capacidad: 10, estado: 1 }
+        ];
+        await db.collection("tables").insertMany(mesasS3);
+
+        const sec3Id = new ObjectId();
+        const sec3 = {
+            _id: sec3Id,
+            idSeccion: "VIP-01",
+            nombre: "VIP Sur",
+            capacidadMax: 30,
+            mesasIds: mesasS3.map(m => m._id),
+            mesasCompletas: mesasS3
+        };
+        await db.collection("sections").insertOne(sec3);
+
+        await db.collection("branches").insertOne({
+            idSucursal: "SUC_003",
+            nombre: "After Hours Sur",
+            direccion: "Plaza Sur Lote 5",
+            tipoBar: "Ejecutivo",
+            encargado: ids[3].toString(),
+            seccionesIds: [sec3Id],
+            secciones: [sec3],
+            estado: "Activo",
+            updatedAt: new Date()
+        });
+
+        console.log("✅ Base de datos inundada con éxito.");
 
     } catch (error) {
-        console.error("❌ Error en el seed:", error);
+        console.error("❌ Error:", error);
     } finally {
         await client.close();
     }

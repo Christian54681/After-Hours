@@ -99,7 +99,7 @@ export class UserFactory {
                         info.estado || 'activo',
                         info.tipoRol,
                         info.idEmpleado?.toString(),
-                        info.idSucursalACargo || 0,
+                        info.idSucursalACargo,
                         info.presupuestoSucursal || 0,
                         username,
                         fechaContrato

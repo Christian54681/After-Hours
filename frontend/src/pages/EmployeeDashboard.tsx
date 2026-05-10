@@ -62,6 +62,22 @@ const EmployeeDashboard = () => {
                 setLoadingShift(false);
             }
         };
+
+        const getMesas = async () => {
+            try {
+                setLoadingShift(true);
+                const response = await fetch(`${urlbase}/admin/tables`);
+                if (!response.ok) throw new Error("Mesas no encontradas");
+                const data = await response.json();
+                setTables(data);
+            } catch (e) {
+                setTables([]);
+            } finally {
+                setLoadingShift(false);
+            }
+        };
+
+        getMesas();
         fetchHorarios();
     }, [user?.idEmpleado]);
 
@@ -257,9 +273,9 @@ const EmployeeDashboard = () => {
                                         >
                                             <div className="flex flex-col items-center gap-2">
                                                 <Armchair className={`w-6 h-6 ${selectedTableId === t.id ? "text-black" : "text-primary"}`} />
-                                                <span className="font-display text-lg uppercase tracking-tighter">Mesa {t.number}</span>
-                                                <Badge className={`text-[9px] pointer-events-none ${t.status === "ocupada" ? "bg-red-500/20 text-red-500 border-none" : "bg-green-500/20 text-green-500 border-none"}`}>
-                                                    {t.status === "ocupada" ? "En uso" : "Libre"}
+                                                <span className="font-display text-lg uppercase tracking-tighter">Mesa {t.numeroMesa}</span>
+                                                <Badge className={`text-[9px] pointer-events-none ${t.estado === 0 ? "bg-red-500/20 text-red-500 border-none" : "bg-green-500/20 text-green-500 border-none"}`}>
+                                                    {t.estado === 0 ? "En uso" : "Libre"}  {/* 0 = ocupado y 1 = libre */}
                                                 </Badge>
                                             </div>
                                         </button>

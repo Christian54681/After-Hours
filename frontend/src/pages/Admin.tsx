@@ -151,6 +151,11 @@ const Admin = () => {
     }
   };
 
+  const getManagerName = (id: string) => {
+    const manager = managers.find((m) => m._id === id);
+    return manager ? manager.empleadoInfo.nombreCompleto : id;
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       <AdminSidebar />
@@ -193,7 +198,7 @@ const Admin = () => {
                   {expandedBranch === b._id && (
                     <div className="mb-1 mt-3 pt-3 border-t border-border space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
                       <p className="text-sm text-muted-foreground mt-2 ml-3">Dirección: <span className="text-foreground">{b.direccion || "Sin dirección"}</span></p>
-                      <p className="text-sm text-muted-foreground ml-3">Gerente Sucursal: <span className="text-foreground">{b.encargado || "No asigando"}</span></p>
+                      <p className="text-sm text-muted-foreground ml-3">Gerente Sucursal: <span className="text-foreground">{b.encargado && b.encargado.length === 24 ? getManagerName(b.encargado) : (b.encargado || "No asignado")} </span></p>
                       <p className="text-sm text-muted-foreground ml-3">Tipo de Bar: <span className="text-foreground">{b.tipoBar || "Sin tipo de bar"}</span></p>
 
 
@@ -262,7 +267,7 @@ const Admin = () => {
                   {managers
                     .filter((m) => m.empleadoInfo.tipoRol === "AdminSucursal") // Filtra solo gerentes
                     .map((m) => (
-                      <SelectItem key={m._id} value={m.empleadoInfo.nombreCompleto}>
+                      <SelectItem key={m._id} value={m._id}>
                         {m.empleadoInfo.nombreCompleto} ({m.empleadoInfo.tipoRol})
                       </SelectItem>
                     ))

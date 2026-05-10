@@ -28,29 +28,38 @@ export async function POST(req: Request) {
         // Vincular a la colección 'sections'
         await db.collection("sections").updateOne(
             { _id: new ObjectId(idSeccionDB as string) },
-            { $push: { idMesas: mesaId } as any }
+            { $push: { mesasIds: mesaId } as any }
         );
 
-        // Meter la mesa en el array embebido de la sucursal
-        // Buscamos la sucursal y la sección específica dentro de su array 'secciones'
-        await db.collection("branches").updateOne(
+        // Meter la mesa en los arrays de la sucursal
+        const updateBranchResult = await db.collection("branches").updateOne(
             {
                 idSucursal: idSucursal,
-                "secciones._id": new ObjectId(idSeccionDB as string)
+                $or: [
+                    { "secciones._id": new ObjectId(idSeccionDB as string) },
+                    { "secciones._id": idSeccionDB as string }
+                ]
             },
             {
                 $push: {
                     "secciones.$.mesasCompletas": {
                         _id: mesaId,
                         ...nuevaMesa
-                    }
-                } as any
+                    },
+                    "secciones.$.mesasIds": mesaId
+                } as any,
+                $set: { updatedAt: new Date() }
             }
         );
 
+        if (updateBranchResult.matchedCount === 0) {
+            console.error(`No se encontró: Sucursal ${idSucursal} con Sección ${idSeccionDB}`);
+            return NextResponse.json({ error: "No se encontró la sucursal o sección para vincular la mesa" }, { status: 404 });
+        }
+
         return NextResponse.json({ success: true, idMesaDB: mesaId });
     } catch (error) {
-        console.error(error);
+        console.error("Error al crear mesa:", error);
         return NextResponse.json({ error: "Error al crear mesa" }, { status: 500 });
     }
 }

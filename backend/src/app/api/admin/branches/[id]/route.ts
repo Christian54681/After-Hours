@@ -50,9 +50,10 @@ export async function DELETE(req: Request, { params }: { params: any }) {
     }
 }
 
+// backend/api/admin/branches/[id]/route.ts
+
 export async function PUT(req: Request, { params }: { params: any }) {
     try {
-        // Validar Token y Rol
         const authHeader = req.headers.get('authorization');
         const token = authHeader?.split(' ')[1];
         if (!token) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -62,16 +63,19 @@ export async function PUT(req: Request, { params }: { params: any }) {
             return NextResponse.json({ error: "No autorizado" }, { status: 403 });
         }
 
-        const body = await req.json(); // Leemos el form completo que manda el front
-        const resolvedParams = await params;
-        const id = resolvedParams.id;
+        const body = await req.json();
+        const { id } = await params; // ESTE es el ID de la sucursal (ej: 69ee4b31...)
 
-        const { _id, ...datosParaActualizar } = body; // Evitamos que el _id se actualice aunque venga en el body
+        const { _id, ...datosParaActualizar } = body;
 
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // Actualizar en MongoDB
+        console.log("--- DEBUG ASIGNACIÓN ---");
+        console.log("ID Sucursal (Params):", id);
+        console.log("Body recibido:", JSON.stringify(body, null, 2));
+
+        // 1. Actualizamos la sucursal
         const resultado = await db.collection("branches").updateOne(
             { _id: new ObjectId(id) },
             {
@@ -86,13 +90,35 @@ export async function PUT(req: Request, { params }: { params: any }) {
             return NextResponse.json({ error: "Sucursal no encontrada" }, { status: 404 });
         }
 
-        return NextResponse.json({
-            success: true,
-            message: "Sucursal actualizada correctamente"
-        });
+        // 2. ACTUALIZAMOS AL EMPLEADO
+        if (datosParaActualizar.encargado) {
+            const encargadoId = String(datosParaActualizar.encargado);
+
+            // Solo si recibimos un ID de 24 caracteres (el _id de JJ)
+            if (ObjectId.isValid(encargadoId)) {
+                // Usamos el idSucursal que viene en el body (ej: "SUC_003")
+                const idTexto = datosParaActualizar.idSucursal;
+
+                await db.collection("users").updateOne(
+                    { _id: new ObjectId(encargadoId) },
+                    {
+                        $set: {
+                            "empleadoInfo.idSucursalACargo": idTexto,
+                            "empleadoInfo.idSucursal": idTexto,
+                            "updatedAt": new Date()
+                        }
+                    }
+                );
+                console.log(`actualizado con éxito a la sucursal ${idTexto}`);
+            } else {
+                console.error(`El valor "${encargadoId}" no es un ID de MongoDB válido.`);
+            }
+        }
+
+        return NextResponse.json({ success: true, message: "Actualizado" });
 
     } catch (error: any) {
-        console.error("Error en PUT sucursal:", error);
-        return NextResponse.json({ error: "Error al actualizar sucursal", detalle: error.message }, { status: 500 });
+        console.error("Error:", error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
