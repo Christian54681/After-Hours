@@ -102,21 +102,37 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         if (!id || id.length !== 24) {
             return NextResponse.json({ error: "ID inválido" }, { status: 400 });
         }
+        const { motivoBaja } = await req.json();
+
+        if (!motivoBaja || motivoBaja.trim() === "") {
+            return NextResponse.json({ error: "El motivo de la baja es obligatorio" }, { status: 400 });
+        }
 
         const client = await clientPromise;
         const db = client.db("after_hours");
 
-        // cambiamos el estado a Inactivo
         const result = await db.collection("users").updateOne(
             { _id: new ObjectId(id), tipo: "empleado" },
-            { $set: { "empleadoInfo.estado": "Inactivo" } }
+            {
+                $set: {
+                    "empleadoInfo.estado": "Inactivo",
+                    "empleadoInfo.motivoBaja": motivoBaja,
+                    "empleadoInfo.fechaBaja": new Date()
+                }
+            }
         );
 
-        if (result.matchedCount === 0) return NextResponse.json({ error: "Empleado no encontrado" }, { status: 404 });
+        if (result.matchedCount === 0) {
+            return NextResponse.json({ error: "Empleado no encontrado" }, { status: 404 });
+        }
 
-        return NextResponse.json({ success: true, message: "Empleado dado de baja (Inactivo)" });
+        return NextResponse.json({
+            success: true,
+            message: "Empleado dado de baja exitosamente"
+        });
+
     } catch (error) {
-        console.error("Error en DELETE:", error);
-        return NextResponse.json({ error: "Error al procesar la baja" }, { status: 400 });
+        console.error("Error en DELETE Empleado:", error);
+        return NextResponse.json({ error: "Error interno al procesar la baja" }, { status: 500 });
     }
 }

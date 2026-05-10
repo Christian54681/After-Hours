@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, UserCircle, Pencil, Trash2, Filter, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Plus, UserCircle, Pencil, Trash2, Filter, ChevronDown, ChevronUp, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { MobileNav } from "@/components/admin/MobileNav";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 interface MongoEmployee {
     _id: string;
@@ -20,7 +21,6 @@ interface MongoEmployee {
         idSucursal: string;
         tipoRol: string;
         telefono?: string;
-        // Campos adicionales dinámicos
         zonaAsignada?: string;
         mesasACargo?: string;
         especialidad?: string;
@@ -48,6 +48,12 @@ const Employees = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editing, setEditing] = useState<MongoEmployee | null>(null);
 
+    // Estados para eliminación
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
+    const [terminationReason, setTerminationReason] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const [form, setForm] = useState<any>({
         username: "",
         email: "",
@@ -56,7 +62,6 @@ const Employees = () => {
         idSucursal: "",
         tipoRol: "",
         telefono: "",
-        // Init campos dinámicos
         zonaAsignada: "",
         mesasACargo: "",
         especialidad: "",
@@ -87,16 +92,35 @@ const Employees = () => {
         }
     };
 
-    const deleteEmployee = async (id: string) => {
-        if (!confirm("¿Confirma que desea eliminar este empleado?")) return;
+    // Nueva función para abrir el modal de confirmación
+    const confirmDelete = (id: string) => {
+        setEmployeeToDelete(id);
+        setTerminationReason("");
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!employeeToDelete) return;
+        if (!terminationReason.trim()) {
+            toast.error("Por favor, ingrese el motivo de la baja");
+            return;
+        }
+
+        setIsDeleting(true);
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`${urlbase}/admin/empleados/${id}`, {
+            const response = await fetch(`${urlbase}/admin/empleados/${employeeToDelete}`, {
                 method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` }
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ motivoBaja: terminationReason })
             });
+
             if (response.ok) {
-                toast.success("Empleado eliminado");
+                toast.success("Empleado eliminado correctamente");
+                setDeleteDialogOpen(false);
                 fetchData();
             } else {
                 const data = await response.json();
@@ -104,6 +128,8 @@ const Employees = () => {
             }
         } catch (error) {
             toast.error("Error de conexión");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -177,17 +203,14 @@ const Employees = () => {
         let bodyEnvio;
 
         if (method === "POST") {
-            // Estructura exacta para el api
             bodyEnvio = {
                 email: form.email,
                 password: form.password,
                 datosEmpleado: {
-                    // Campos base
                     nombreCompleto: form.nombreCompleto,
                     telefono: form.telefono,
                     tipoRol: form.tipoRol,
                     idSucursal: form.idSucursal,
-                    // Campos dinámicos (se incluyen todos los del form)
                     zonaAsignada: form.zonaAsignada,
                     mesasACargo: form.mesasACargo,
                     especialidad: form.especialidad,
@@ -363,8 +386,8 @@ const Employees = () => {
                                                 <Button variant="secondary" size="sm" onClick={() => openEdit(e)}>
                                                     <Pencil className="w-3 h-3 mr-1" /> Editar
                                                 </Button>
-                                                <Button variant="outline" size="sm" onClick={() => deleteEmployee(e._id)}
-                                                    className="text-muted-foreground hover:text-foreground hover:border-muted-foreground">
+                                                <Button variant="outline" size="sm" onClick={() => confirmDelete(e._id)}
+                                                    className="text-muted-foreground hover:text-destructive hover:border-destructive transition-colors">
                                                     <Trash2 className="w-3 h-3 mr-1" /> Eliminar
                                                 </Button>
                                             </div>
@@ -377,13 +400,12 @@ const Employees = () => {
                 </div>
             </main>
 
+            {/* DIALOG DE AGREGAR/EDITAR */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="bg-card border-border max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle className="text-foreground font-display">{editing ? "Editar Empleado" : "Agregar Empleado"}</DialogTitle>
-                        <DialogDescription className="text-muted-foreground">
-                            {/* {editing ? "Modifica los datos del personal." : "Completa los datos para registrar un nuevo empleado."} */}
-                        </DialogDescription>
+                        <DialogDescription className="text-muted-foreground"></DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 py-2">
@@ -436,7 +458,6 @@ const Employees = () => {
                             </div>
                         </div>
 
-                        {/* SECCIÓN DE CAMPOS DINÁMICOS */}
                         {form.tipoRol && form.tipoRol !== "AdminSucursal" && form.tipoRol !== "AdminGeneral" && (
                             <div className="pt-4 border-t border-border">
                                 <h4 className="text font-bold text-foreground font-display mb-3">Campos Específicos de {form.tipoRol}</h4>
@@ -448,6 +469,60 @@ const Employees = () => {
                     <DialogFooter className="mt-4">
                         <Button variant="outline" onClick={() => setDialogOpen(false)} className="border-border text-muted-foreground">Cancelar</Button>
                         <Button onClick={save} className="gold-glow">{editing ? "Guardar Cambios" : "Agregar Empleado"}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* NUEVO DIALOG DE CONFIRMACIÓN DE ELIMINACIÓN */}
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent className="bg-card border-border max-w-md">
+                    <DialogHeader>
+                        <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+                            <AlertTriangle className="w-6 h-6 text-destructive" />
+                        </div>
+                        <DialogTitle className="text-center text-xl font-display">¿Confirmar baja de personal?</DialogTitle>
+                        <DialogDescription className="text-center text-muted-foreground">
+                            Esta acción eliminará al empleado del sistema. Por favor, indique el motivo de la baja para el registro.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="reason" className="text-sm font-medium">Motivo de la baja</Label>
+                            <Textarea
+                                id="reason"
+                                placeholder="Ej: Renuncia voluntaria, término de contrato, etc..."
+                                value={terminationReason}
+                                onChange={(e) => setTerminationReason(e.target.value)}
+                                className="bg-muted/50 border-border min-h-[100px] resize-none focus:ring-destructive"
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter className="grid grid-cols-2 gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteDialogOpen(false)}
+                            className="border-border"
+                            disabled={isDeleting}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleConfirmDelete}
+                            disabled={isDeleting}
+                            className="bg-destructive hover:bg-destructive/90"
+                        >
+                            {isDeleting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Eliminando...
+                                </>
+                            ) : (
+                                "Confirmar Baja"
+                            )}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
