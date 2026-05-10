@@ -3,7 +3,6 @@ import { Empleado } from "./Empleado";
 
 export class PersonalOperativo extends Empleado {
     public areaActual: string;
-    public activo: boolean;
 
     constructor(
         nombreCompleto: string,
@@ -13,14 +12,13 @@ export class PersonalOperativo extends Empleado {
         tipoRol: string,
         idEmpleado: string,
         areaActual: string,
-        activo: boolean = true,
         createdAt?: Date,
         username?: string,
+        idSucursal?: string
     ) {
-        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, username, createdAt);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, username, createdAt, idSucursal);
         
         this.areaActual = areaActual;
-        this.activo = activo;
     }
 
     //metodos

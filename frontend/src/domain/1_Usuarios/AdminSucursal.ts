@@ -17,8 +17,9 @@ export class AdminSucursal extends Empleado {
         presupuestoSucursal: number,
         username?: string,
         createdAt?: Date,
+        idSucursal?: string
     ) {
-        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, username, createdAt);
+        super(nombreCompleto, email, telefono, estado, tipoRol, idEmpleado, username, createdAt, idSucursal);
         this.idSucursalACargo = idSucursalACargo;
         this.presupuestoSucursal = presupuestoSucursal;
     }

@@ -7,6 +7,7 @@ export class Empleado extends Usuario {
     public idEmpleado: string;
     public tipoRol: string;
     public tipo: string = "empleado";
+    public idSucursal: string;
 
     constructor(
         nombreCompleto: string,
@@ -17,10 +18,12 @@ export class Empleado extends Usuario {
         idEmpleado: string,
         username?: string,
         createdAt?: Date,
+        idSucursal?: string
     ) {
         super(nombreCompleto, email, telefono, estado, username, createdAt);
         this.idEmpleado = idEmpleado;
         this.tipoRol = tipoRol;
+        this.idSucursal = idSucursal;
     }
 
     //metodos

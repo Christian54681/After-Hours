@@ -52,7 +52,7 @@ export async function POST(req: Request) {
                 username: usuario.username,
                 tipo: usuario.tipo,
                 createdAt: usuario.createdAt,
-                info: usuario.tipo === 'empleado' ? { ...usuario.empleadoInfo, idEmpleado: usuario._id } : usuario.tipo === "Cliente" || usuario.tipo === "cliente" ? { ...usuario.clienteInfo } : null
+                info: usuario.tipo === 'empleado' ? { ...usuario.empleadoInfo, idEmpleado: usuario._id, idSucursal: usuario.empleadoInfo?.idSucursal } : usuario.tipo === "Cliente" || usuario.tipo === "cliente" ? { ...usuario.clienteInfo } : null
             }
         });
 
