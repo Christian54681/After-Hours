@@ -34,8 +34,10 @@ const Login = () => {
         toast.success("¡Bienvenido!");
         // Redirige según el rol del usuario
         const userRole = data.user.info.tipoRol;
-        if (userRole === "AdminSucursal" || userRole === "AdminGeneral") {
+        if (userRole === "AdminGeneral") {
           navigate("/admin");
+        } else if (userRole === "AdminSucursal"){
+          navigate("/admin/empleados")
         } else if (data.user.tipo === "empleado") {
           navigate("/empleado");
         } else {
