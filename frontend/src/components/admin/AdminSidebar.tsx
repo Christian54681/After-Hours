@@ -8,7 +8,7 @@ const navItems = [
     { to: "/admin", label: "Sucursales", icon: Building2, roles: ["AdminGeneral"] },
     { to: "/admin/empleados", label: "Empleados", icon: Users, roles: ["AdminGeneral", "AdminSucursal"] },
     { to: "/admin/turnos", label: "Turnos", icon: CalendarClock, roles: ["AdminSucursal"] },
-    { to: "/admin/proveedores", label: "Proveedores", icon: Truck, roles: ["AdminGeneral"] },
+    { to: "/admin/proveedores", label: "Proveedores", icon: Truck, roles: ["AdminGeneral", "AdminSucursal"] },
     { to: "/admin/secciones", label: "Secciones", icon: LayoutGrid, roles: ["AdminSucursal"] },
     { to: "/admin/mesas", label: "Mesas", icon: Armchair, roles: ["AdminSucursal"] },
 ];

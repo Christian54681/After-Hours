@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { Plus, Truck, Pencil, Trash2, ChevronDown, ChevronUp, Clock, User } from "lucide-react";
+import { Plus, Truck, Pencil, Trash2, ChevronDown, ChevronUp, Clock, User, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { MobileNav } from "@/components/admin/MobileNav";
+import { OrderModal } from "@/components/admin/OrderModal";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { OrderHistory } from "@/components/admin/OrderHistory";
 
 interface Supplier {
     _id?: string;
@@ -15,21 +18,26 @@ interface Supplier {
     empresa: string;
     contacto: string;
     tiempoEntregaDias: number;
-    estado: string; // "Activo" o "Inactivo"
+    estado: string;
 }
 
 const emptyForm = { empresa: "", contacto: "", tiempoEntregaDias: "1", idProvedor: "" };
 const urlbase = "http://localhost:3000/api";
 
 const Suppliers = () => {
+    const { user } = useAuth();
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [loading, setLoading] = useState(true);
     const [expanded, setExpanded] = useState<string | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [orderModalOpen, setOrderModalOpen] = useState(false);
+    const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
     const [editing, setEditing] = useState<Supplier | null>(null);
     const [form, setForm] = useState(emptyForm);
 
-    // CARGAR DATOS
+    // DETERMINAR ROL
+    const isAdminGeneral = user?.tipoRol === "AdminGeneral";
+
     const fetchSuppliers = async () => {
         try {
             setLoading(true);
@@ -47,7 +55,6 @@ const Suppliers = () => {
         fetchSuppliers();
     }, []);
 
-    // LÓGICA DE DIÁLOGOS
     const openNew = () => {
         setEditing(null);
         setForm({ ...emptyForm, idProvedor: (suppliers.length + 1).toString() });
@@ -65,13 +72,16 @@ const Suppliers = () => {
         setDialogOpen(true);
     };
 
-    // GUARDAR (CREATE / UPDATE)
+    const openOrder = (s: Supplier) => {
+        setSelectedSupplier(s);
+        setOrderModalOpen(true);
+    };
+
     const save = async () => {
         if (!form.empresa.trim() || !form.contacto.trim()) {
             toast.error("Empresa y contacto son obligatorios");
             return;
         }
-
         const method = editing ? "PUT" : "POST";
         const url = editing ? `${urlbase}/admin/providers/${editing._id}` : `${urlbase}/admin/providers`;
 
@@ -91,16 +101,12 @@ const Suppliers = () => {
                 toast.success(editing ? "Proveedor actualizado" : "Proveedor creado");
                 setDialogOpen(false);
                 fetchSuppliers();
-            } else {
-                const err = await res.json();
-                toast.error(err.error || "Error en la operación");
             }
         } catch (error) {
             toast.error("Error de red");
         }
     };
 
-    // ELIMINAR
     const remove = async (id: string) => {
         if (!confirm("¿Estás seguro de eliminar este proveedor?")) return;
         try {
@@ -114,7 +120,6 @@ const Suppliers = () => {
         }
     };
 
-    // CAMBIAR ESTADO
     const toggleStatus = async (s: Supplier) => {
         const nuevoEstado = s.estado === "Activo" ? "Inactivo" : "Activo";
         try {
@@ -143,18 +148,19 @@ const Suppliers = () => {
                         <div>
                             <h1 className="text-2xl md:text-3xl font-display font-bold text-gradient-gold">Proveedores</h1>
                             <p className="text-xs font-mono text-muted-foreground mt-1 uppercase tracking-widest">
-                                {suppliers.length} Registros
+                                {suppliers.length} Registros | Rol: {user?.tipoRol}
                             </p>
                         </div>
-                        <Button onClick={openNew} className="gold-glow hover:scale-[1.02] transition-transform">
-                            <Plus className="w-4 h-4 mr-2" /> Nuevo Proveedor
-                        </Button>
+                        {/* SOLO ADMIN GENERAL PUEDE CREAR */}
+                        {isAdminGeneral && (
+                            <Button onClick={openNew} className="gold-glow hover:scale-[1.02] transition-transform">
+                                <Plus className="w-4 h-4 mr-2" /> Nuevo Proveedor
+                            </Button>
+                        )}
                     </div>
 
                     {loading ? (
                         <div className="flex justify-center p-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
-                    ) : suppliers.length === 0 ? (
-                        <div className="glass-card p-10 text-center text-muted-foreground">No hay proveedores.</div>
                     ) : (
                         <div className="grid gap-4">
                             {suppliers.map((s) => (
@@ -179,45 +185,55 @@ const Suppliers = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setExpanded(expanded === s._id ? null : s._id!)}
-                                            className="text-muted-foreground hover:text-primary"
-                                        >
-                                            {expanded === s._id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => openOrder(s)}
+                                                className="border-primary/30 hover:bg-primary hover:text-black text-[10px] uppercase font-bold h-8"
+                                            >
+                                                <ShoppingCart className="w-3 h-3 mr-1" /> Pedir
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setExpanded(expanded === s._id ? null : s._id!)}
+                                                className="text-muted-foreground"
+                                            >
+                                                {expanded === s._id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </Button>
+                                        </div>
                                     </div>
 
                                     {expanded === s._id && (
                                         <div className="mt-4 pt-4 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-2">
-                                                <div className="flex items-center gap-3">
-                                                    <User className="w-4 h-4 text-primary/60" />
-                                                    <p className="text-sm">Contacto: <span className="text-foreground font-medium">{s.contacto}</span></p>
-                                                </div>
-                                            </div>
+                                            <p className="text-sm ml-2">Contacto: <span className="text-foreground font-medium">{s.contacto}</span></p>
 
-                                            <div className="flex gap-2 pt-5">
-                                                <Button variant="outline" size="sm" onClick={() => toggleStatus(s)} className="h-8 text-[10px] uppercase font-bold">
-                                                    {s.estado === "Activo" ? "Desactivar" : "Activar"}
-                                                </Button>
-                                                <Button variant="secondary" size="sm" onClick={() => openEdit(s)} className="h-8 text-[10px] uppercase font-bold bg-muted/50 hover:bg-primary hover:text-black transition-colors">
-                                                    <Pencil className="w-3 h-3 mr-1" /> Editar
-                                                </Button>
-                                                <Button variant="ghost" size="sm" onClick={() => remove(s._id!)} className="h-8 text-[10px] uppercase font-bold text-red-500/60 hover:text-red-500 hover:bg-red-500/10">
-                                                    <Trash2 className="w-3 h-3 mr-1" /> Eliminar
-                                                </Button>
-                                            </div>
+                                            {/* SOLO ADMIN GENERAL VE LOS BOTONES DE CRUD */}
+                                            {isAdminGeneral && (
+                                                <div className="flex gap-2 pt-5">
+                                                    <Button variant="outline" size="sm" onClick={() => toggleStatus(s)} className="h-7 text-[9px] uppercase font-bold">
+                                                        {s.estado === "Activo" ? "Inhabilitar" : "Reactivar"}
+                                                    </Button>
+                                                    <Button variant="secondary" size="sm" onClick={() => openEdit(s)} className="h-7 text-[9px] uppercase font-bold">
+                                                        <Pencil className="w-3 h-3 mr-1" /> Editar
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => remove(s._id!)} className="h-7 text-[9px] uppercase font-bold text-red-500">
+                                                        <Trash2 className="w-3 h-3 mr-1" /> Borrar
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
                             ))}
                         </div>
                     )}
+                    <OrderHistory user={user} />
                 </div>
             </main>
 
+            {/* MODAL DE EDICIÓN/CREACIÓN (ADMIN) */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="bg-card border-border sm:max-w-[500px]">
                     <DialogHeader>
@@ -225,56 +241,43 @@ const Suppliers = () => {
                             {editing ? "Actualizar Proveedor" : "Registro de Proveedor"}
                         </DialogTitle>
                     </DialogHeader>
+                    {/* ... Resto del formulario que ya tenías ... */}
                     <div className="space-y-4 py-4">
                         <div className="grid grid-cols-4 gap-4">
                             <div className="col-span-1 space-y-2">
                                 <Label className="text-[10px] uppercase text-muted-foreground font-bold">ID Int</Label>
-                                <Input
-                                    type="number"
-                                    value={form.idProvedor}
-                                    onChange={(e) => setForm({ ...form, idProvedor: e.target.value })}
-                                    className="bg-muted/30 border-border"
-                                />
+                                <Input type="number" value={form.idProvedor} onChange={(e) => setForm({ ...form, idProvedor: e.target.value })} className="bg-muted/30 border-border" />
                             </div>
                             <div className="col-span-3 space-y-2">
                                 <Label className="text-[10px] uppercase text-muted-foreground font-bold">Nombre de Empresa</Label>
-                                <Input
-                                    value={form.empresa}
-                                    onChange={(e) => setForm({ ...form, empresa: e.target.value })}
-                                    placeholder="Ej: Cervecería Modelo"
-                                    className="bg-muted/30 border-border"
-                                />
+                                <Input value={form.empresa} onChange={(e) => setForm({ ...form, empresa: e.target.value })} placeholder="Ej: Cervecería Modelo" className="bg-muted/30 border-border" />
                             </div>
                         </div>
-
                         <div className="space-y-2">
                             <Label className="text-[10px] uppercase text-muted-foreground font-bold">Información de Contacto</Label>
-                            <Input
-                                value={form.contacto}
-                                onChange={(e) => setForm({ ...form, contacto: e.target.value })}
-                                placeholder="Nombre, Teléfono o Email"
-                                className="bg-muted/30 border-border"
-                            />
+                            <Input value={form.contacto} onChange={(e) => setForm({ ...form, contacto: e.target.value })} placeholder="Nombre, Teléfono o Email" className="bg-muted/30 border-border" />
                         </div>
-
                         <div className="space-y-2">
                             <Label className="text-[10px] uppercase text-muted-foreground font-bold">Tiempo de Entrega (Días)</Label>
-                            <Input
-                                type="number"
-                                value={form.tiempoEntregaDias}
-                                onChange={(e) => setForm({ ...form, tiempoEntregaDias: e.target.value })}
-                                className="bg-muted/30 border-border"
-                            />
+                            <Input type="number" value={form.tiempoEntregaDias} onChange={(e) => setForm({ ...form, tiempoEntregaDias: e.target.value })} className="bg-muted/30 border-border" />
                         </div>
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={save} className="gold-glow">
-                            {editing ? "Guardar Cambios" : "Confirmar Registro"}
-                        </Button>
+                        <Button onClick={save} className="gold-glow">{editing ? "Guardar" : "Registrar"}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* MODAL DE PEDIDOS (GENERAL Y SUCURSAL) */}
+            {selectedSupplier && (
+                <OrderModal
+                    isOpen={orderModalOpen}
+                    onClose={() => setOrderModalOpen(false)}
+                    supplier={selectedSupplier}
+                    user={user} // Pasamos la instancia completa del usuario
+                />
+            )}
         </div>
     );
 };

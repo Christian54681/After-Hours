@@ -46,7 +46,7 @@ const Landing = () => {
 
   const esStaff = user?.tipoRol === "AdminGeneral" || user?.tipoRol === "AdminSucursal";
   const rutaStaff = user?.tipoRol === "AdminGeneral" ? "/admin" : (user?.tipoRol === "AdminSucursal" ? "/admin/empleados" : "/login");
-  const ruta = user?.tipo === "cliente" ? "/perfil" : (user.tipoRol === "AdminGeneral" ? "/admin" : (user ? "/empleado" : "/login"));
+  const ruta = user?.tipo === "cliente" ? "/perfil" : (user?.tipoRol === "AdminGeneral" ? "/admin" : (user ? "/empleado" : "/login"));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
