@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-if (!process.env.MONGODB_URI) {
+if (!process.env.MONGODB_URI) { // MONGODB_URI=mongodb://localhost:27017/after_hours
     throw new Error('Por favor, define MONGODB_URI en su archivo .env.local');
 }
 
