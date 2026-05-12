@@ -18,6 +18,7 @@ import { AuthProvider } from "./context/AuthContext.tsx";
 import Meseros from "./pages/Mesero.tsx";
 import Profile from './pages/Profile';
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.tsx";
+import ShowMenu from "./pages/Menu.tsx";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Register />} />
+            <Route path="/menu" element={<ShowMenu />} />
             <Route
               element={
                 <ProtectedRoute

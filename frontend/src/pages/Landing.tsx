@@ -66,6 +66,8 @@ const Landing = () => {
                 <ShieldCheck className="w-4 h-4" /> Panel Staff
               </Link>
             )}
+            
+              <Link className="hover:text-primary transition-colors" to="/menu">Ver menú</Link>
           </div>
 
           <div className="flex items-center gap-4">
