@@ -169,3 +169,46 @@ export const initialPurchaseOrders: PurchaseOrder[] = [
         total: 6 * 850 + 10 * 38,
     },
 ];
+
+
+// src/data/mockData.ts
+
+export const MOCK_PRODUCTS = [
+    { id: "p1", name: "Martini Seco", unitPrice: 180},
+    { id: "p2", name: "Old Fashioned", unitPrice: 210},
+    { id: "p3", name: "Margarita Tradicional", unitPrice: 160},
+    { id: "p4", name: "Cerveza artesanal Ambar", unitPrice: 95},
+    { id: "p5", name: "Heineken Silver", unitPrice: 85},
+    { id: "p6", name: "Carajillo", unitPrice: 195},
+    { id: "p7", name: "Mezcal 400 Conejos", unitPrice: 150},
+    { id: "p8", name: "Torres 10 (Copa)", unitPrice: 140},
+];
+
+export const MOCK_SECTIONS = [
+    {
+        _id: "s1",
+        nombre: "Terraza Principal",
+        mesasCompletas: [
+            { _id: "m1", numeroMesa: 1, estado: 1 }, // 1 = Libre
+            { _id: "m2", numeroMesa: 2, estado: 0 }, // 0 = En uso
+            { _id: "m3", numeroMesa: 3, estado: 1 },
+        ]
+    },
+    {
+        _id: "s2",
+        nombre: "VIP Lounge",
+        mesasCompletas: [
+            { _id: "m10", numeroMesa: 10, estado: 1 },
+            { _id: "m11", numeroMesa: 11, estado: 0 },
+        ]
+    }
+];
+
+export const MOCK_SHIFTS = [
+    {
+        startTime: "18:00",
+        endTime: "02:00",
+        days: ["fri", "sat", "sun"],
+        branch: "Sucursal Norte"
+    }
+];
